@@ -1,0 +1,18 @@
+{
+    'name': 'Store Management',
+    'version': '19.0.1.0.0',
+    'summary': 'Manage store products, customers and orders',
+    'author': 'Your Name',
+    'category': 'Sales',
+    'license': 'LGPL-3',
+    'depends': ['sale'],
+    'data': [
+        'data/sequence.xml',
+        'views/product_views.xml',
+        'views/customer_views.xml',
+        'views/order_views.xml',
+        'views/menus.xml',
+    ],
+    'installable': True,
+    'application': True,
+}

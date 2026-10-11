@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="store_customer_list_view" model="ir.ui.view">
+        <field name="name">res.partner.list.store</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Customers">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city" optional="show"/>
+                <field name="country_id" optional="hide"/>
+                <field name="store_order_count" string="Orders"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="store_customer_form_view" model="ir.ui.view">
+        <field name="name">res.partner.form.store</field>
+        <field name="model">res.partner</field>
+        <field name="mode">primary</field>
+        <field name="priority">100</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="category_id" position="after">
+                <field name="is_store_customer"/>
+            </field>
+            <page name="contact_addresses" position="before">
+                <page string="Store Orders" name="store_orders">
+                    <field name="store_order_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date_order"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="amount_total" sum="Total"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                </page>
+            </page>
+        </field>
+    </record>
+
+        <!-- Search View -->
+    <record id="store_customer_search_view" model="ir.ui.view">
+        <field name="name">res.partner.search.store</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="Customers">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city"/>
+                <separator/>
+                <filter string="With Orders" name="with_orders"
+                        domain="[('store_order_ids', '!=', False)]"/>
+                <filter string="Without Orders" name="without_orders"
+                        domain="[('store_order_ids', '=', False)]"/>
+                <separator/>
+                <filter string="Archived" name="inactive"
+                        domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="City" name="group_city"
+                            context="{'group_by': 'city'}"/>
+                    <filter string="Country" name="group_country"
+                            context="{'group_by': 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="store_customer_action" model="ir.actions.act_window">
+        <field name="name">Customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="store_customer_search_view"/>
+        <field name="domain">[('is_store_customer', '=', True)]</field>
+        <field name="context">{'default_is_store_customer': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first store customer
+            </p>
+        </field>
+    </record>
+
+        <!-- Link views to the action -->
+    <record id="store_customer_action_view_list" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="store_customer_list_view"/>
+        <field name="act_window_id" ref="store_customer_action"/>
+    </record>
+
+    <record id="store_customer_action_view_form" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="store_customer_form_view"/>
+        <field name="act_window_id" ref="store_customer_action"/>
+    </record>
+</odoo>

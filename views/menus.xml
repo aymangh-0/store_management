@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="store_menu_root"
+              name="Store Management"
+              sequence="10"/>
+
+    <menuitem id="store_menu_products"
+              name="Products"
+              parent="store_menu_root"
+              action="store_product_action"
+              sequence="10"/>
+
+    <menuitem id="store_menu_categories"
+              name="Categories"
+              parent="store_menu_root"
+              action="product.product_category_action_form"
+              sequence="20"/>
+
+    <menuitem id="store_menu_customers"
+              name="Customers"
+              parent="store_menu_root"
+              action="store_customer_action"
+              sequence="30"/>
+
+    <menuitem id="store_menu_orders"
+              name="Orders"
+              parent="store_menu_root"
+              action="store_order_action"
+              sequence="40"/>
+
+
+</odoo>
