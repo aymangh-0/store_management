@@ -18,7 +18,11 @@ class SaleOrder(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('is_store_order') and vals.get('name', _('New')) == _('New'):
+            is_store_order = vals.get(
+                'is_store_order',
+                self.env.context.get('default_is_store_order', False),
+            )
+            if is_store_order and vals.get('name', _('New')) == _('New'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('store.order') or _('New')
         return super().create(vals_list)
 
