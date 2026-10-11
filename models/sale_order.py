@@ -16,6 +16,17 @@ class SaleOrder(models.Model):
         currency_field='currency_id',
     )
 
+    store_state = fields.Selection(
+        selection=[
+            ('draft', 'Draft'),
+            ('confirmed', 'Confirmed'),
+            ('cancel', 'Cancelled'),
+        ],
+        string='Store Status',
+        compute='_compute_store_state',
+        store=True,
+    )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -32,6 +43,17 @@ class SaleOrder(models.Model):
     def _compute_store_total(self):
         for order in self:
             order.store_total = sum(order.order_line.mapped('price_subtotal'))
+
+    @api.depends('state')
+    def _compute_store_state(self):
+        mapping = {
+            'draft': 'draft',
+            'sent': 'draft',
+            'sale': 'confirmed',
+            'cancel': 'cancel',
+        }
+        for order in self:
+            order.store_state = mapping.get(order.state, 'draft')
 
     # دوال الورك فلو للتأكيد و الالغاء و جعل الحاله درافت و كتابة قيود عليها للتأكد
 

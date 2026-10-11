@@ -13,10 +13,10 @@
                 <field name="partner_id"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="store_total" sum="Total"/>
-                <field name="state" widget="badge"
-                       decoration-info="state == 'draft'"
-                       decoration-success="state == 'sale'"
-                       decoration-danger="state == 'cancel'"/>
+                <field name="store_state" widget="badge"
+                       decoration-info="store_state == 'draft'"
+                       decoration-success="store_state == 'confirmed'"
+                       decoration-danger="store_state == 'cancel'"/>
             </list>
         </field>
     </record>
@@ -38,8 +38,8 @@
                     <button name="action_store_reset_draft" type="object"
                             string="Reset to Draft"
                             invisible="state != 'cancel'"/>
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,sale,cancel"/>
+                    <field name="state" invisible="1"/>
+                    <field name="store_state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
