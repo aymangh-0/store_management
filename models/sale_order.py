@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -31,3 +32,34 @@ class SaleOrder(models.Model):
     def _compute_store_total(self):
         for order in self:
             order.store_total = sum(order.order_line.mapped('price_subtotal'))
+
+    # دوال الورك فلو للتأكيد و الالغاء و جعل الحاله درافت و كتابة قيود عليها للتأكد
+
+    def action_store_confirm(self):
+        for order in self:
+            if order.state == 'cancel':
+                raise UserError(_('A cancelled order cannot be confirmed. Reset it to draft first.'))
+            if order.state != 'draft':
+                raise UserError(_('Only draft orders can be confirmed.'))
+            if not order.order_line.filtered(lambda line: not line.display_type):
+                raise UserError(_('You cannot confirm an order without products.'))
+        return self.action_confirm()
+
+    def action_store_cancel(self):
+        for order in self:
+            if order.state == 'cancel':
+                raise UserError(_('This order is already cancelled'))
+        return self.action_cancel()
+
+    def action_store_reset_draft(self):
+        for order in self:
+            if order.state != 'cancel':
+                raise UserError(_('Only cancelled orders can be reset to draft'))
+        return self.action_draft()
+
+    def write(self, vals):
+        protected_fields = {'partner_id', 'date_order', 'order_line'}
+        for order in self:
+            if order.is_store_order and order.state == 'sale' and protected_fields & set(vals):
+                raise UserError(_('A confirmed order cannot be modified.'))
+        return super().write(vals)
