@@ -95,11 +95,7 @@ store_management/
 ├── report/
 │   ├── order_report_templates.xml
 │   └── order_report.xml
-├── tests/
-│   ├── common.py
-│   ├── test_migration.py
-│   ├── test_store_order.py
-│   └── test_store_product_flag.py
+│   
 └── views/
     ├── product_views.xml
     ├── customer_views.xml
