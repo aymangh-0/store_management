@@ -23,7 +23,7 @@ Store records are kept separate from regular Sales records (`is_store_product`, 
 ### Products
 - Store products are flagged (`is_store_product`); store rules apply to them only
 - Stock Quantity field (default `0`)
-- Reference is required for single-variant store products (Python constraint, checked when the Reference or the store flag changes) and unique across all products
+- Reference is required for single-variant store products (checked on the server when a product is created or its Reference or store flag changes) and unique across all products
 - Sales Price cannot be negative for store products
 - Dedicated List, Form, and Search views
 - A **Store Product** checkbox on the product form, so existing products can be added to the store from the standard product form too
@@ -95,6 +95,11 @@ store_management/
 ├── report/
 │   ├── order_report_templates.xml
 │   └── order_report.xml
+├── tests/
+│   ├── common.py
+│   ├── test_migration.py
+│   ├── test_store_order.py
+│   └── test_store_product_flag.py
 └── views/
     ├── product_views.xml
     ├── customer_views.xml
@@ -128,6 +133,12 @@ python odoo-bin -c odoo.conf -d <database> -u store_management
 ```
 
 Upgrading from `19.0.1.0.0`: products used in store orders that are not cancelled are flagged as store products automatically. The upgrade log lists any of them that have no Reference or a negative Sales Price; fix those from the product form.
+
+To run the module tests (on a test database only):
+
+```bash
+python odoo-bin -c odoo.conf -d <test_database> -u store_management --test-tags /store_management --stop-after-init
+```
 
 ## Usage
 

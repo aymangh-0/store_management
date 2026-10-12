@@ -48,9 +48,28 @@ class ProductTemplate(models.Model):
             if product.is_store_product and product.list_price < 0:
                 raise ValidationError(_('Sales Price cannot be negative.'))
 
-    @api.constrains('default_code', 'is_store_product')
+    # Not @api.constrains: Odoo re-validates constraints when default_code is
+    # recomputed, and product.template.create recomputes it from a new variant
+    # that has no Reference yet (the Reference is copied to it afterwards).
+    # So the check runs once create/write have finished.
+    @api.model_create_multi
+    def create(self, vals_list):
+        templates = super().create(vals_list)
+        templates._check_store_reference()
+        return templates
+
+    def write(self, vals):
+        res = super().write(vals)
+        if {'default_code', 'is_store_product'} & set(vals):
+            self._check_store_reference()
+        return res
+
     def _check_store_reference(self):
         for product in self:
+            # A template created by product.product.create has no variant yet;
+            # product.product checks it once the variant exists.
+            if not product.with_context(active_test=False).product_variant_ids:
+                continue
             if (
                 product.is_store_product
                 and product.product_variant_count <= 1
