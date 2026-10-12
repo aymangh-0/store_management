@@ -8,6 +8,8 @@
     'depends': ['sale'],
     'data': [
         'data/sequence.xml',
+        'report/order_report_templates.xml',
+        'report/order_report.xml',
         'views/product_views.xml',
         'views/customer_views.xml',
         'views/order_views.xml',

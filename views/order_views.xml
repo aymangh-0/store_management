@@ -38,6 +38,8 @@
                     <button name="action_store_reset_draft" type="object"
                             string="Reset to Draft"
                             invisible="state != 'cancel'"/>
+                    <button name="%(action_report_store_order)d" type="action"
+                            string="Print"/>
                     <field name="state" invisible="1"/>
                     <field name="store_state" widget="statusbar"/>
                 </header>

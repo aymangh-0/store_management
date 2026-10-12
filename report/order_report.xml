@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="action_report_store_order" model="ir.actions.report">
+        <field name="name">Store Order</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">store_management.report_store_order</field>
+        <field name="report_file">store_management.report_store_order</field>
+        <field name="print_report_name">'Order - %s' % object.name</field>
+    </record>
+</odoo>
