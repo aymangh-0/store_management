@@ -55,7 +55,7 @@ class SaleOrder(models.Model):
         for order in self:
             order.store_state = mapping.get(order.state, 'draft')
 
-    # دوال الورك فلو للتأكيد و الالغاء و جعل الحاله درافت و كتابة قيود عليها للتأكد
+    # Workflow actions: confirm, cancel and reset to draft, with their rules
 
     def action_store_confirm(self):
         for order in self:

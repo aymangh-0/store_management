@@ -33,8 +33,11 @@
                             <field name="name"/>
                             <field name="date_order"/>
                             <field name="currency_id" column_invisible="True"/>
-                            <field name="amount_total" sum="Total"/>
-                            <field name="state"/>
+                            <field name="store_total" sum="Total"/>
+                            <field name="store_state" widget="badge"
+                                   decoration-info="store_state == 'draft'"
+                                   decoration-success="store_state == 'confirmed'"
+                                   decoration-danger="store_state == 'cancel'"/>
                         </list>
                     </field>
                 </page>

@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 class ProductTemplate(models.Model):
@@ -18,6 +18,4 @@ class ProductTemplate(models.Model):
     def _check_list_price(self):
         for product in self:
             if product.list_price < 0:
-                raise ValidationError(
-                    'Sales Price cannot be negative'
-                )
+                raise ValidationError(_('Sales Price cannot be negative.'))
