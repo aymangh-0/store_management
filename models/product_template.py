@@ -5,8 +5,6 @@ from odoo.exceptions import ValidationError
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    # Only Store Managers may change it, see _has_field_access.
-    # copy=False so duplicating a product from Sales does not need that right.
     is_store_product = fields.Boolean(
         string='Store Product',
         default=False,
@@ -23,18 +21,16 @@ class ProductTemplate(models.Model):
         'Product Reference must be unique!',
     )
 
+    # Only Store Managers can change the store flag (enforced on the server).
     @api.model
     def _has_field_access(self, field, operation):
-        # Server-side guard for write, create, import and default_* context.
-        # Not field groups=: that would also hide the field from Store Users
-        # and break the store domains that read it.
         if self._is_store_flag_write_denied(field, operation):
             return False
         return super()._has_field_access(field, operation)
 
+    # True when the current user may not change the store flag.
     @api.model
     def _is_store_flag_write_denied(self, field, operation):
-        # Shared with product.product, which inherits the field (_inherits).
         return (
             operation == 'write'
             and field.name == 'is_store_product'
@@ -42,32 +38,30 @@ class ProductTemplate(models.Model):
             and not self.env.user.has_group('store_management.group_store_manager')
         )
 
+    # Store products cannot have a negative sales price.
     @api.constrains('list_price', 'is_store_product')
     def _check_list_price(self):
         for product in self:
             if product.is_store_product and product.list_price < 0:
                 raise ValidationError(_('Sales Price cannot be negative.'))
 
-    # Not @api.constrains: Odoo re-validates constraints when default_code is
-    # recomputed, and product.template.create recomputes it from a new variant
-    # that has no Reference yet (the Reference is copied to it afterwards).
-    # So the check runs once create/write have finished.
+    # Check the store Reference after create (not @api.constrains: it fails mid-create).
     @api.model_create_multi
     def create(self, vals_list):
         templates = super().create(vals_list)
         templates._check_store_reference()
         return templates
 
+    # Re-check the store Reference when it or the store flag changes.
     def write(self, vals):
         res = super().write(vals)
         if {'default_code', 'is_store_product'} & set(vals):
             self._check_store_reference()
         return res
 
+    # Single-variant store products must have a Reference.
     def _check_store_reference(self):
         for product in self:
-            # A template created by product.product.create has no variant yet;
-            # product.product checks it once the variant exists.
             if not product.with_context(active_test=False).product_variant_ids:
                 continue
             if (

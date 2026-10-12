@@ -20,6 +20,7 @@ class ResPartner(models.Model):
         compute='_compute_store_order_count',
     )
 
+    # Number of store orders for the customer.
     @api.depends('store_order_ids')
     def _compute_store_order_count(self):
         for partner in self:

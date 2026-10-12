@@ -5,19 +5,8 @@ from odoo import SUPERUSER_ID, api
 _logger = logging.getLogger(__name__)
 
 
+# Flag products of non-cancelled store orders (raw SQL so invalid legacy products are logged, not fatal).
 def migrate(cr, version):
-    """Flag products used in non-cancelled store orders as store products.
-
-    ``is_store_product`` was added in 19.0.1.0.0 (commit 1add442) without a
-    version bump and defaults to False, so products created before it would
-    disappear from the Store Products menu and from the store order line
-    product picker.
-
-    Raw SQL on purpose: writing through the ORM runs the store product
-    constraints (required reference, non-negative price), and one legacy
-    product without a reference would abort the whole upgrade. Products that
-    break those rules are logged instead, so they can be fixed from the form.
-    """
     if not version:
         return
 
@@ -43,7 +32,6 @@ def migrate(cr, version):
     if not flagged_ids:
         return
 
-    # Same scope as _check_store_reference: single-variant templates only.
     cr.execute("""
         SELECT pt.id
           FROM product_template pt

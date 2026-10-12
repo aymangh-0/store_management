@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    # Ordered quantity must be greater than 0.
     @api.constrains('product_uom_qty')
     def _check_store_quantity(self):
         for line in self:
@@ -18,6 +19,7 @@ class SaleOrderLine(models.Model):
                     _('Ordered quantity must be greater than 0.')
                 )
 
+    # Block changes to lines of a confirmed store order.
     def _check_store_order_editable(self):
         for line in self:
             if (
@@ -27,12 +29,14 @@ class SaleOrderLine(models.Model):
             ):
                 raise UserError(_('A confirmed order cannot be modified.'))
 
+    # No new lines on a confirmed store order.
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
         lines._check_store_order_editable()
         return lines
 
+    # No edits to product, quantity or price on a confirmed store order.
     def write(self, vals):
         if set(vals) & set(self._get_protected_fields()):
             self._check_store_order_editable()

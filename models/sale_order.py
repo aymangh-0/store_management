@@ -27,6 +27,7 @@ class SaleOrder(models.Model):
         store=True,
     )
 
+    # Give store orders a CMD/<year>/NNNN number.
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -39,11 +40,13 @@ class SaleOrder(models.Model):
         return super().create(vals_list)
 
 
+    # Order total from the line subtotals.
     @api.depends('order_line.price_subtotal')
     def _compute_store_total(self):
         for order in self:
             order.store_total = sum(order.order_line.mapped('price_subtotal'))
 
+    # Map the Sales state to the store status (Draft / Confirmed / Cancelled).
     @api.depends('state')
     def _compute_store_state(self):
         mapping = {
@@ -55,8 +58,7 @@ class SaleOrder(models.Model):
         for order in self:
             order.store_state = mapping.get(order.state, 'draft')
 
-    # Workflow actions: confirm, cancel and reset to draft, with their rules
-
+    # Confirm button: draft orders with products only.
     def action_store_confirm(self):
         for order in self:
             if order.state == 'cancel':
@@ -67,18 +69,21 @@ class SaleOrder(models.Model):
                 raise UserError(_('You cannot confirm an order without products.'))
         return self.action_confirm()
 
+    # Cancel button.
     def action_store_cancel(self):
         for order in self:
             if order.state == 'cancel':
                 raise UserError(_('This order is already cancelled'))
         return self.action_cancel()
 
+    # Reset to Draft button: cancelled orders only.
     def action_store_reset_draft(self):
         for order in self:
             if order.state != 'cancel':
                 raise UserError(_('Only cancelled orders can be reset to draft'))
         return self.action_draft()
 
+    # A confirmed store order cannot change its customer, date or lines.
     def write(self, vals):
         protected_fields = {'partner_id', 'date_order', 'order_line'}
         for order in self:
