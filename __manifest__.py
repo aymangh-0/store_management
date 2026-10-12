@@ -15,6 +15,7 @@
         'views/product_views.xml',
         'views/customer_views.xml',
         'views/order_views.xml',
+        'views/config_views.xml',
         'views/menus.xml',
     ],
     'installable': True,

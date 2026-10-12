@@ -3,7 +3,8 @@
 
     <menuitem id="store_menu_root"
               name="Store Management"
-              sequence="10"/>
+              sequence="10"
+              groups="group_store_user"/>
 
     <menuitem id="store_menu_products"
               name="Products"
@@ -29,5 +30,22 @@
               action="store_order_action"
               sequence="40"/>
 
+    <menuitem id="store_menu_config"
+              name="Configuration"
+              parent="store_menu_root"
+              sequence="100"
+              groups="group_store_manager"/>
+
+    <menuitem id="store_menu_config_sequence"
+              name="Order Sequence"
+              parent="store_menu_config"
+              action="store_sequence_action"
+              sequence="10"/>
+
+    <menuitem id="store_menu_config_team"
+              name="Store Team"
+              parent="store_menu_config"
+              action="store_team_action"
+              sequence="20"/>
 
 </odoo>

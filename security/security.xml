@@ -10,7 +10,8 @@
         <field name="name">Store User</field>
         <field name="sequence">10</field>
         <field name="privilege_id" ref="privilege_store_management"/>
-        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')),
+                                         (4, ref('sales_team.group_sale_salesman'))]"/>
         <field name="comment">Can view and create store orders</field>
     </record>
 
@@ -18,7 +19,8 @@
         <field name="name">Store Manager</field>
         <field name="sequence">20</field>
         <field name="privilege_id" ref="privilege_store_management"/>
-        <field name="implied_ids" eval="[(4, ref('group_store_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('group_store_user')),
+                                         (4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         <field name="comment">Full access to products, customers and orders.</field>
     </record>
