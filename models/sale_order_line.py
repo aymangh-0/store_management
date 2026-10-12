@@ -1,11 +1,9 @@
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
-from odoo.exceptions import UserError
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    # Ordered quantity must be greater than 0.
     @api.constrains('product_uom_qty')
     def _check_store_quantity(self):
         for line in self:
@@ -19,25 +17,9 @@ class SaleOrderLine(models.Model):
                     _('Ordered quantity must be greater than 0.')
                 )
 
-    # Block changes to lines of a confirmed store order.
-    def _check_store_order_editable(self):
-        for line in self:
-            if (
-                line.order_id.is_store_order
-                and line.order_id.state == 'sale'
-                and not line.is_downpayment
-            ):
-                raise UserError(_('A confirmed order cannot be modified.'))
-
-    # No new lines on a confirmed store order.
-    @api.model_create_multi
-    def create(self, vals_list):
-        lines = super().create(vals_list)
-        lines._check_store_order_editable()
-        return lines
-
-    # No edits to product, quantity or price on a confirmed store order.
-    def write(self, vals):
-        if set(vals) & set(self._get_protected_fields()):
-            self._check_store_order_editable()
-        return super().write(vals)
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        res = super()._onchange_product_id()
+        if self.order_id.is_store_order and self.product_id:
+            self.price_unit = self.product_id.lst_price
+        return res

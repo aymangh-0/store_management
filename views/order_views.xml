@@ -66,8 +66,7 @@
                         <page string="Order Lines" name="order_lines">
                             <field name="order_line" readonly="state != 'draft'">
                                 <list editable="bottom">
-                                    <field name="product_id"
-                                           domain="[('is_store_product', '=', True), ('sale_ok', '=', True)]"/>
+                                    <field name="product_id"/>
                                     <field name="product_uom_qty"/>
                                     <field name="price_unit"/>
                                     <field name="currency_id" column_invisible="True"/>
