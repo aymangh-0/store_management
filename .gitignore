@@ -29,3 +29,5 @@ htmlcov/
 # Operating System
 .DS_Store
 Thumbs.db
+
+docs/

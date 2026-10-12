@@ -95,7 +95,6 @@ store_management/
 ├── report/
 │   ├── order_report_templates.xml
 │   └── order_report.xml
-│   
 └── views/
     ├── product_views.xml
     ├── customer_views.xml
@@ -129,12 +128,6 @@ python odoo-bin -c odoo.conf -d <database> -u store_management
 ```
 
 Upgrading from `19.0.1.0.0`: products used in store orders that are not cancelled are flagged as store products automatically. The upgrade log lists any of them that have no Reference or a negative Sales Price; fix those from the product form.
-
-To run the module tests (on a test database only):
-
-```bash
-python odoo-bin -c odoo.conf -d <test_database> -u store_management --test-tags /store_management --stop-after-init
-```
 
 ## Usage
 
