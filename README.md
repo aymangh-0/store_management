@@ -10,21 +10,22 @@ Instead of creating new models from scratch, the module **extends Odoo's existin
 
 | Store concept | Extended model | What the module adds |
 |---|---|---|
-| Store Product | `product.template` | Stock quantity, unique reference, non-negative sales price |
+| Store Product | `product.template` | Store product flag, stock quantity, required unique reference, non-negative sales price |
 | Product Category | `product.category` | Reused as is, with its own menu |
 | Store Customer | `res.partner` | Store customer flag, store orders relation, orders count |
 | Store Order | `sale.order` | `CMD/YYYY/NNNN` sequence, store total, store status, custom workflow |
-| Store Order Line | `sale.order.line` | Quantity rule, sales price auto-fill |
+| Store Order Line | `sale.order.line` | Quantity rule, confirmed-order protection, store products only |
 
-Store records are kept separate from regular Sales records (`is_store_customer`, `is_store_order`), so the standard Sales app keeps working unchanged.
+Store records are kept separate from regular Sales records (`is_store_product`, `is_store_customer`, `is_store_order`), so the standard Sales app keeps working unchanged.
 
 ## Features
 
 ### Products
+- Store products are flagged (`is_store_product`); store rules apply to them only
 - Stock Quantity field (default `0`)
-- Reference is required and unique
-- Sales Price cannot be negative
-- List, Form, and Search views
+- Reference is required for store products (Python constraint) and unique across all products
+- Sales Price cannot be negative for store products
+- Dedicated List, Form, and Search views (the standard Sales product screens are unchanged)
 - Filters: **Active** and **Low Stock (≤ 5)**
 
 ### Customers
@@ -35,13 +36,14 @@ Store records are kept separate from regular Sales records (`is_store_customer`,
 
 ### Orders
 - Automatic numbering: `CMD/2026/0001`, `CMD/2026/0002`, …
-- Sales price filled automatically when a product is selected
+- Unit price filled automatically from the customer's pricelist (standard Odoo behavior)
+- Order lines accept store products only
 - Ordered quantity must be greater than 0
 - Order total computed automatically from the order lines
 - Workflow buttons: **Confirm**, **Cancel**, **Reset to Draft**
 - Status bar: **Draft → Confirmed → Cancelled**
 - Business rules:
-  - A confirmed order can no longer be edited (enforced in Python, from any screen)
+  - A confirmed order can no longer be edited (enforced in Python on both orders and order lines)
   - A cancelled order cannot be confirmed
   - Reset to Draft is only allowed from Cancelled
 - Customer selection limited to store customers
