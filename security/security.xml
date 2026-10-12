@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="privilege_store_management" model="res.groups.privilege">
+        <field name="name">Store Management</field>
+        <field name="sequence">50</field>
+        <field name="category_id" ref="base.module_category_sales"/>
+    </record>
+
+    <record id="group_store_user" model="res.groups">
+        <field name="name">Store User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="privilege_store_management"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Can view and create store orders</field>
+    </record>
+
+    <record id="group_store_manager" model="res.groups">
+        <field name="name">Store Manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="privilege_store_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_store_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Full access to products, customers and orders.</field>
+    </record>
+
+    <record id="rule_store_sequence_manager" model="ir.rule">
+        <field name="name">Store Manager: store order sequence only</field>
+        <field name="model_id" ref="base.model_ir_sequence"/>
+        <field name="groups" eval="[(4, ref('group_store_manager'))]"/>
+        <field name="domain_force">[('code', '=', 'store.order')]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_store_sequence_system" model="ir.rule">
+        <field name="name">Settings: all sequences</field>
+        <field name="model_id" ref="base.model_ir_sequence"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

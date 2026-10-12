@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_store_order_user,store.order.user,sale.model_sale_order,group_store_user,1,1,1,0
+access_store_order_line_user,store.order.line.user,sale.model_sale_order_line,group_store_user,1,1,1,1
+access_store_product_template_user,store.product.template.user,product.model_product_template,group_store_user,1,0,0,0
+access_store_product_product_user,store.product.product.user,product.model_product_product,group_store_user,1,0,0,0
+access_store_product_category_user,store.product.category.user,product.model_product_category,group_store_user,1,0,0,0
+access_store_partner_user,store.partner.user,base.model_res_partner,group_store_user,1,0,0,0
+access_store_order_manager,store.order.manager,sale.model_sale_order,group_store_manager,1,1,1,1
+access_store_order_line_manager,store.order.line.manager,sale.model_sale_order_line,group_store_manager,1,1,1,1
+access_store_product_template_manager,store.product.template.manager,product.model_product_template,group_store_manager,1,1,1,1
+access_store_product_product_manager,store.product.product.manager,product.model_product_product,group_store_manager,1,1,1,1
+access_store_product_category_manager,store.product.category.manager,product.model_product_category,group_store_manager,1,1,1,1
+access_store_partner_manager,store.partner.manager,base.model_res_partner,group_store_manager,1,1,1,1
+access_store_sequence_manager,store.sequence.manager,base.model_ir_sequence,group_store_manager,1,1,0,0

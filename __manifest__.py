@@ -7,6 +7,8 @@
     'license': 'LGPL-3',
     'depends': ['sale'],
     'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
         'data/sequence.xml',
         'report/order_report_templates.xml',
         'report/order_report.xml',
