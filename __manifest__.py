@@ -1,6 +1,6 @@
 {
     'name': 'Store Management',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'summary': 'Manage store products, customers and orders',
     'description': 'A training module for managing a small retail store: products, customers, sales orders, a PDF order report, and store security groups.',
     'author': 'Ayman Alghamdi',

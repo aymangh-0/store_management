@@ -5,9 +5,12 @@ from odoo.exceptions import ValidationError
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    # Only Store Managers may change it, see _has_field_access.
+    # copy=False so duplicating a product from Sales does not need that right.
     is_store_product = fields.Boolean(
         string='Store Product',
         default=False,
+        copy=False,
     )
 
     store_stock_qty = fields.Integer(
@@ -19,6 +22,25 @@ class ProductTemplate(models.Model):
         'unique(default_code)',
         'Product Reference must be unique!',
     )
+
+    @api.model
+    def _has_field_access(self, field, operation):
+        # Server-side guard for write, create, import and default_* context.
+        # Not field groups=: that would also hide the field from Store Users
+        # and break the store domains that read it.
+        if self._is_store_flag_write_denied(field, operation):
+            return False
+        return super()._has_field_access(field, operation)
+
+    @api.model
+    def _is_store_flag_write_denied(self, field, operation):
+        # Shared with product.product, which inherits the field (_inherits).
+        return (
+            operation == 'write'
+            and field.name == 'is_store_product'
+            and not self.env.su
+            and not self.env.user.has_group('store_management.group_store_manager')
+        )
 
     @api.constrains('list_price', 'is_store_product')
     def _check_list_price(self):

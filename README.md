@@ -14,18 +14,20 @@ Instead of creating new models from scratch, the module **extends Odoo's existin
 | Product Category | `product.category` | Reused as is, with its own menu |
 | Store Customer | `res.partner` | Store customer flag, store orders relation, orders count |
 | Store Order | `sale.order` | `CMD/YYYY/NNNN` sequence, store total, store status, custom workflow |
-| Store Order Line | `sale.order.line` | Quantity rule, confirmed-order protection, store products only |
+| Store Order Line | `sale.order.line` | Quantity rule, confirmed-order protection, store-product picker |
 
-Store records are kept separate from regular Sales records (`is_store_product`, `is_store_customer`, `is_store_order`), so the standard Sales app keeps working unchanged.
+Store records are kept separate from regular Sales records (`is_store_product`, `is_store_customer`, `is_store_order`), so the standard Sales app keeps working as before (it only shows a **Store Product** checkbox to Store Managers).
 
 ## Features
 
 ### Products
 - Store products are flagged (`is_store_product`); store rules apply to them only
 - Stock Quantity field (default `0`)
-- Reference is required for store products (Python constraint) and unique across all products
+- Reference is required for single-variant store products (Python constraint, checked when the Reference or the store flag changes) and unique across all products
 - Sales Price cannot be negative for store products
-- Dedicated List, Form, and Search views (the standard Sales product screens are unchanged)
+- Dedicated List, Form, and Search views
+- A **Store Product** checkbox on the product form, so existing products can be added to the store from the standard product form too
+- Only Store Managers can change the **Store Product** flag (checked on the server, including imports and API calls)
 - Filters: **Active** and **Low Stock (≤ 5)**
 
 ### Customers
@@ -37,7 +39,7 @@ Store records are kept separate from regular Sales records (`is_store_product`, 
 ### Orders
 - Automatic numbering: `CMD/2026/0001`, `CMD/2026/0002`, …
 - Unit price filled automatically from the customer's pricelist (standard Odoo behavior)
-- Order lines accept store products only
+- The order line product picker shows store products only (a view filter, not a server rule)
 - Ordered quantity must be greater than 0
 - Order total computed automatically from the order lines
 - Workflow buttons: **Confirm**, **Cancel**, **Reset to Draft**
@@ -63,7 +65,7 @@ A printable QWeb PDF report for each order, available from the **Print** button 
 | Group | Access |
 |---|---|
 | **Store User** | Views and creates store orders (sees own orders only). Read-only access to products, categories, and customers. Cannot delete orders. |
-| **Store Manager** | Full access to products, customers, and orders (sees all orders), plus the **Configuration** menu. |
+| **Store Manager** | Full access to products, customers, and orders (sees all orders), plus the **Configuration** menu. The only group that can set or clear the **Store Product** flag. |
 
 - Store Manager includes all Store User rights.
 - Both groups include the matching Sales groups (**Own Documents** for Store User, **All Documents** for Store Manager), because store orders are built on `sale.order`.
@@ -80,9 +82,13 @@ store_management/
 │   └── ir.model.access.csv
 ├── data/
 │   └── sequence.xml
+├── migrations/
+│   └── 19.0.1.1.0/
+│       └── post-migrate.py
 ├── models/
 │   ├── __init__.py
 │   ├── product_template.py
+│   ├── product_product.py
 │   ├── res_partner.py
 │   ├── sale_order.py
 │   └── sale_order_line.py
@@ -120,6 +126,8 @@ To upgrade after changes:
 ```bash
 python odoo-bin -c odoo.conf -d <database> -u store_management
 ```
+
+Upgrading from `19.0.1.0.0`: products used in store orders that are not cancelled are flagged as store products automatically. The upgrade log lists any of them that have no Reference or a negative Sales Price; fix those from the product form.
 
 ## Usage
 
