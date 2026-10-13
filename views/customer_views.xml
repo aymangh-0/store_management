@@ -26,8 +26,11 @@
             <field name="category_id" position="after">
                 <field name="is_store_customer"/>
             </field>
+            <page name="contact_addresses" position="attributes">
+                <attribute name="autofocus"/>
+            </page>
             <page name="contact_addresses" position="before">
-                <page string="Store Orders" name="store_orders">
+                <page string="Store Orders" name="store_orders" autofocus="autofocus">
                     <field name="store_order_ids" readonly="1">
                         <list>
                             <field name="name"/>
