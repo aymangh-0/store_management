@@ -31,7 +31,8 @@
             </page>
             <page name="contact_addresses" position="before">
                 <page string="Store Orders" name="store_orders" autofocus="autofocus">
-                    <field name="store_order_ids" readonly="1">
+                    <field name="store_order_ids" readonly="1"
+                           context="{'form_view_ref': 'store_management.store_order_form_view'}">
                         <list>
                             <field name="name"/>
                             <field name="date_order"/>
