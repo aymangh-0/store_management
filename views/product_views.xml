@@ -18,6 +18,10 @@
             <xpath expr="//label[@for='standard_price']" position="attributes">
                 <attribute name="string">Purchase Price</attribute>
             </xpath>
+            <field name="active" position="attributes">
+                <attribute name="invisible">0</attribute>
+                <attribute name="widget">boolean_toggle</attribute>
+            </field>
         </field>
     </record>
 
