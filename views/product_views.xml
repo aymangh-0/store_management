@@ -22,6 +22,7 @@
     </record>
 
     <!-- List View -->
+
     <record id="product_template_list_view_inherit_store" model="ir.ui.view">
         <field name="name">product.template.list.inherit.store</field>
         <field name="model">product.template</field>
@@ -29,6 +30,9 @@
         <field name="priority">100</field>
         <field name="inherit_id" ref="product.product_template_tree_view"/>
         <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="default_order">default_code</attribute>
+            </xpath>
             <field name="standard_price" position="attributes">
                 <attribute name="string">Purchase Price</attribute>
             </field>
