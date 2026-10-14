@@ -57,3 +57,25 @@ class ProductTemplate(models.Model):
                     summary=_('Low Stock'),
                     note=_('Only %s left in stock.', product.store_stock_qty),
                 )
+
+    def write(self, vals):
+        if 'store_stock_qty' not in vals:
+            return super().write(vals)
+
+        old_qty = {product.id: product.store_stock_qty for product in self}
+        result = super().write(vals)
+
+        move_type = self.env.context.get('store_move_type', 'manual')
+        order_id = self.env.context.get('store_order_id', False)
+        history = self.env['store.stock.history'].sudo()
+        for product in self:
+            difference = product.store_stock_qty - old_qty[product.id]
+            if difference:
+                history.create({
+                    'product_id': product.id,
+                    'move_type': move_type,
+                    'quantity': difference,
+                    'stock_after': product.store_stock_qty,
+                    'order_id': order_id,
+                })
+        return result

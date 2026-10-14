@@ -75,9 +75,13 @@ class SaleOrder(models.Model):
                     ))
 
     def _store_update_stock(self, sign):
+        move_type = 'order_confirm' if sign < 0 else 'order_cancel'
         for order in self:
             for line in order.order_line.filtered(lambda l: l.product_id):
-                product = line.product_id.product_tmpl_id.sudo()
+                product = line.product_id.product_tmpl_id.sudo().with_context(
+                    store_move_type=move_type,
+                    store_order_id=order.id,
+                )
                 product.store_stock_qty += sign * int(line.product_uom_qty)
 
     def action_store_confirm(self):
