@@ -15,12 +15,14 @@ class StoreStockHistory(models.Model):
     )
     move_type = fields.Selection(
         selection=[
+            ('initial', 'Initial Stock'),
             ('order_confirm', 'Order Confirmed'),
             ('order_cancel', 'Order Cancelled'),
             ('manual', 'Manual Adjustment'),
         ],
         string="Type", required=True, readonly=True,
     )
+
     quantity = fields.Integer(readonly=True)
     stock_after = fields.Integer(string="Stock After", readonly=True)
     order_id = fields.Many2one(

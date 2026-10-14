@@ -31,6 +31,8 @@
                         domain="[('move_type', '=', 'order_cancel')]"/>
                 <filter string="Manual Adjustment" name="filter_manual"
                         domain="[('move_type', '=', 'manual')]"/>
+                <filter string="Initial Stock" name="filter_initial"
+                        domain="[('move_type', '=', 'initial')]"/>
                 <separator/>
                 <filter string="Date" name="filter_date" date="date"/>
                 <group>

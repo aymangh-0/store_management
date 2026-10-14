@@ -85,3 +85,17 @@ class ProductTemplate(models.Model):
                     'order_id': order_id,
                 })
         return result
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        products = super().create(vals_list)
+        history = self.env['store.stock.history'].sudo()
+        for product in products:
+            if product.store_stock_qty:
+                history.create({
+                    'product_id': product.id,
+                    'move_type': 'initial',
+                    'quantity': product.store_stock_qty,
+                    'stock_after': product.store_stock_qty,
+                })
+        return products
