@@ -16,6 +16,7 @@
         'report/order_report.xml',
         'views/product_views.xml',
         'views/customer_views.xml',
+        'wizard/store_order_cancel_wizard_views.xml',
         'views/order_views.xml',
         'views/config_views.xml',
         'views/menus.xml',

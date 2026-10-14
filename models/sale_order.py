@@ -27,6 +27,10 @@ class SaleOrder(models.Model):
         store=True,
     )
 
+    store_cancel_reason = fields.Text(
+        string="Cancellation Reason", readonly=True, copy=False
+    )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
