@@ -11,6 +11,7 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'data/sequence.xml',
+        'data/cron.xml',
         'report/order_report_templates.xml',
         'report/order_report.xml',
         'views/product_views.xml',
