@@ -17,6 +17,7 @@
                        decoration-info="store_state == 'draft'"
                        decoration-success="store_state == 'confirmed'"
                        decoration-danger="store_state == 'cancel'"/>
+                <field name="store_cancel_reason" optional="hide"/>
             </list>
         </field>
     </record>
