@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="store_stock_history_list_view" model="ir.ui.view">
+        <field name="name">store.stock.history.list</field>
+        <field name="model">store.stock.history</field>
+        <field name="arch" type="xml">
+            <list string="Stock History" create="0" edit="0" delete="0">
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="move_type"/>
+                <field name="quantity"
+                       decoration-success="quantity &gt; 0"
+                       decoration-danger="quantity &lt; 0"/>
+                <field name="stock_after"/>
+                <field name="order_id"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="store_stock_history_search_view" model="ir.ui.view">
+        <field name="name">store.stock.history.search</field>
+        <field name="model">store.stock.history</field>
+        <field name="arch" type="xml">
+            <search string="Stock History">
+                <field name="product_id"/>
+                <field name="order_id"/>
+                <filter string="Order Confirmed" name="filter_confirm"
+                        domain="[('move_type', '=', 'order_confirm')]"/>
+                <filter string="Order Cancelled" name="filter_cancel"
+                        domain="[('move_type', '=', 'order_cancel')]"/>
+                <filter string="Manual Adjustment" name="filter_manual"
+                        domain="[('move_type', '=', 'manual')]"/>
+                <separator/>
+                <filter string="Date" name="filter_date" date="date"/>
+                <group>
+                    <filter string="Product" name="group_product"
+                            context="{'group_by': 'product_id'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'move_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="store_stock_history_action" model="ir.actions.act_window">
+        <field name="name">Stock History</field>
+        <field name="res_model">store.stock.history</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                No stock movements yet
+            </p>
+        </field>
+    </record>
+
+</odoo>

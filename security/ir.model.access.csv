@@ -13,3 +13,4 @@ access_store_product_category_manager,store.product.category.manager,product.mod
 access_store_partner_manager,store.partner.manager,base.model_res_partner,group_store_manager,1,1,1,1
 access_store_sequence_manager,store.sequence.manager,base.model_ir_sequence,group_store_manager,1,1,0,0
 access_store_cancel_wizard_user,store.order.cancel.wizard user,model_store_order_cancel_wizard,group_store_user,1,1,1,1
+access_store_stock_history_manager,store.stock.history manager,model_store_stock_history,group_store_manager,1,0,0,0

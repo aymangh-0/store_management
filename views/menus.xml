@@ -48,4 +48,10 @@
               action="store_team_action"
               sequence="20"/>
 
+    <menuitem id="store_menu_stock_history"
+          name="Stock History"
+          parent="store_menu_config"
+          action="store_stock_history_action"
+          sequence="30"/>
+
 </odoo>

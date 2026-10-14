@@ -19,6 +19,7 @@
         'wizard/store_order_cancel_wizard_views.xml',
         'views/order_views.xml',
         'views/config_views.xml',
+        'views/stock_history_views.xml',
         'views/menus.xml',
     ],
     'installable': True,
