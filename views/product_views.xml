@@ -14,6 +14,7 @@
             </field>
             <field name="default_code" position="after">
                 <field name="store_stock_qty"/>
+                <field name="store_is_low_stock"/>
                 <field name="create_date" readonly="1"/>
             </field>
             <xpath expr="//label[@for='standard_price']" position="attributes">
@@ -42,7 +43,9 @@
                 <attribute name="string">Purchase Price</attribute>
             </field>
             <field name="standard_price" position="after">
-                <field name="store_stock_qty" optional="show"/>
+                <field name="store_stock_qty" optional="show"
+                       decoration-danger="store_is_low_stock"/>
+                <field name="store_is_low_stock" optional="show"/>
             </field>
         </field>
     </record>
@@ -56,8 +59,8 @@
         <field name="inherit_id" ref="product.product_template_search_view"/>
         <field name="arch" type="xml">
             <filter name="inactive" position="before">
-                <filter string="Low Stock (≤ 5)" name="store_low_stock"
-                        domain="[('store_stock_qty', '&lt;=', 5)]"/>
+            <filter string="Low Stock" name="store_low_stock"
+                    domain="[('store_is_low_stock', '=', True)]"/>
                 <separator/>
                 <filter string="Active" name="store_active"
                         domain="[('active', '=', True)]"/>
