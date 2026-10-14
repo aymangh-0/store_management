@@ -57,6 +57,25 @@ class SaleOrder(models.Model):
 
     # Workflow actions: confirm, cancel and reset to draft, with their rules
 
+    def _store_check_stock(self):
+        for order in self:
+            for line in order.order_line.filtered(lambda l: l.product_id):
+                product = line.product_id.product_tmpl_id
+                if line.product_uom_qty > product.store_stock_qty:
+                    raise UserError(_(
+                        'Not enough stock for "%(product)s". '
+                        'Available: %(available)s, ordered: %(ordered)s.',
+                        product=product.display_name,
+                        available=product.store_stock_qty,
+                        ordered=int(line.product_uom_qty),
+                    ))
+
+    def _store_update_stock(self, sign):
+        for order in self:
+            for line in order.order_line.filtered(lambda l: l.product_id):
+                product = line.product_id.product_tmpl_id.sudo()
+                product.store_stock_qty += sign * int(line.product_uom_qty)
+
     def action_store_confirm(self):
         for order in self:
             if order.state == 'cancel':
@@ -65,13 +84,19 @@ class SaleOrder(models.Model):
                 raise UserError(_('Only draft orders can be confirmed.'))
             if not order.order_line.filtered(lambda line: not line.display_type):
                 raise UserError(_('You cannot confirm an order without products.'))
-        return self.action_confirm()
+        self._store_check_stock()
+        result = self.action_confirm()
+        self._store_update_stock(-1)
+        return result
 
     def action_store_cancel(self):
         for order in self:
             if order.state == 'cancel':
                 raise UserError(_('This order is already cancelled'))
-        return self.action_cancel()
+        confirmed_orders = self.filtered(lambda o: o.state == 'sale')
+        result = self.action_cancel()
+        confirmed_orders._store_update_stock(1)
+        return result
 
     def action_store_reset_draft(self):
         for order in self:
