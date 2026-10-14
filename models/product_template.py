@@ -20,6 +20,12 @@ class ProductTemplate(models.Model):
         'Product Reference must be unique!',
     )
 
+    store_stock_history_ids = fields.One2many(
+        'store.stock.history', 'product_id',
+        string="Stock History",
+        groups="store_management.group_store_manager",
+    )
+
     @api.constrains('list_price')
     def _check_list_price(self):
         for product in self:

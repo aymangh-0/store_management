@@ -20,6 +20,23 @@
             <xpath expr="//label[@for='standard_price']" position="attributes">
                 <attribute name="string">Purchase Price</attribute>
             </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Stock History" name="store_stock_history"
+                      groups="store_management.group_store_manager">
+                    <field name="store_stock_history_ids" readonly="1">
+                        <list>
+                            <field name="date"/>
+                            <field name="move_type"/>
+                            <field name="quantity"
+                                   decoration-success="quantity &gt; 0"
+                                   decoration-danger="quantity &lt; 0"/>
+                            <field name="stock_after"/>
+                            <field name="order_id"/>
+                            <field name="user_id"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
             <field name="active" position="attributes">
                 <attribute name="invisible">0</attribute>
                 <attribute name="widget">boolean_toggle</attribute>
