@@ -2,7 +2,7 @@
 
 A custom Odoo 19 module for managing a small retail store: products, customers, and sales orders.
 
-This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, and QWeb reports.
+This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, and scheduled actions.
 
 ## Approach
 
@@ -10,11 +10,12 @@ Instead of creating new models from scratch, the module **extends Odoo's existin
 
 | Store concept | Extended model | What the module adds |
 |---|---|---|
-| Store Product | `product.template` | Stock quantity, unique reference, non-negative sales price |
+| Store Product | `product.template` | Stock quantity, low stock flag, daily low stock alert, unique reference, non-negative sales price |
 | Product Category | `product.category` | Reused as is, with its own menu |
 | Store Customer | `res.partner` | Store customer flag, store orders relation, orders count |
-| Store Order | `sale.order` | `CMD/YYYY/NNNN` sequence, store total, store status, custom workflow |
-| Store Order Line | `sale.order.line` | Quantity rule, sales price auto-fill |
+| Store Order | `sale.order` | `CMD/YYYY/NNNN` sequence, store total, store status, custom workflow, stock deduction, cancellation reason |
+| Store Order Line | `sale.order.line` | Quantity rule, no duplicate products, sales price auto-fill |
+| Cancel Wizard | `store.order.cancel.wizard` *(new transient model)* | Pop-up that asks for the cancellation reason |
 
 Store records are kept separate from regular Sales records (`is_store_customer`, `is_store_order`), so the standard Sales app keeps working unchanged.
 
@@ -22,10 +23,11 @@ Store records are kept separate from regular Sales records (`is_store_customer`,
 
 ### Products
 - Stock Quantity field (default `0`)
+- **Low Stock** flag, set automatically when the stock is below `10` (the stock number turns red in the list)
 - Reference is required and unique
 - Sales Price cannot be negative
 - List, Form, and Search views
-- Filters: **Active** and **Low Stock (≤ 5)**
+- Filters: **Active** and **Low Stock**
 
 ### Customers
 - Dedicated list and form for store customers only
@@ -37,6 +39,7 @@ Store records are kept separate from regular Sales records (`is_store_customer`,
 - Automatic numbering: `CMD/2026/0001`, `CMD/2026/0002`, …
 - Sales price filled automatically when a product is selected
 - Ordered quantity must be greater than 0
+- The same product cannot be added twice to the same order (change its quantity instead)
 - Order total computed automatically from the order lines
 - Workflow buttons: **Confirm**, **Cancel**, **Reset to Draft**
 - Status bar: **Draft → Confirmed → Cancelled**
@@ -44,9 +47,25 @@ Store records are kept separate from regular Sales records (`is_store_customer`,
   - A confirmed order can no longer be edited (enforced in Python, from any screen)
   - A cancelled order cannot be confirmed
   - Reset to Draft is only allowed from Cancelled
+- Stock handling:
+  - An order cannot be confirmed if any product's quantity is greater than its available stock
+  - Confirming an order deducts the ordered quantities from stock
+  - Cancelling a confirmed order returns the quantities to stock (cancelling a draft order does not change stock)
+- Cancellation reason:
+  - **Cancel** opens a pop-up (wizard) that requires a reason
+  - The reason is saved on the order, shown on the form, and posted in the chatter
+  - Optional **Cancellation Reason** column in the orders list (hidden by default)
 - Customer selection limited to store customers
 - Search by order number, customer, and product
 - Filters by status and order date, grouping by customer, status, and date
+
+### Low Stock Alert
+A scheduled action (**Store: Low Stock Alert**) runs once a day:
+- Creates a **warning activity** for every Store Manager on each low stock product
+- Does not create duplicates while an alert for the same product is still open
+- Marks old alerts as done automatically when the product's stock is back above the limit
+
+To run it manually: **Settings → Technical → Scheduled Actions → Store: Low Stock Alert → Run Manually** (Developer Mode).
 
 ### PDF Report
 A printable QWeb PDF report for each order, available from the **Print** button on the order form. It shows:
@@ -77,13 +96,18 @@ store_management/
 │   ├── security.xml
 │   └── ir.model.access.csv
 ├── data/
-│   └── sequence.xml
+│   ├── sequence.xml
+│   └── cron.xml
 ├── models/
 │   ├── __init__.py
 │   ├── product_template.py
 │   ├── res_partner.py
 │   ├── sale_order.py
 │   └── sale_order_line.py
+├── wizard/
+│   ├── __init__.py
+│   ├── store_order_cancel_wizard.py
+│   └── store_order_cancel_wizard_views.xml
 ├── report/
 │   ├── order_report_templates.xml
 │   └── order_report.xml
@@ -139,6 +163,11 @@ The **Store Management** app adds the following menus:
 - [x] Orders search view (filters by status and customer)
 - [x] QWeb PDF report for orders
 - [x] Security groups: **Store User** and **Store Manager**
+- [x] No duplicate products in the same order
+- [x] Stock deduction on confirm and restore on cancel
+- [x] Low stock flag
+- [x] Daily low stock alert (scheduled action)
+- [x] Cancellation reason wizard
 
 ## License
 
