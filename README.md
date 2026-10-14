@@ -52,7 +52,7 @@ Store records are kept separate from regular Sales records (`is_store_customer`,
   - Confirming an order deducts the ordered quantities from stock
   - Cancelling a confirmed order returns the quantities to stock (cancelling a draft order does not change stock)
 - Cancellation reason:
-  - **Cancel** opens a pop-up (wizard) that requires a reason
+  - **Cancel** opens a pop-up (wizard) with ready-made reasons: **Customer request**, **Wrong order details**, **Payment issue**, or **Other** (requires a written reason)
   - The reason is saved on the order, shown on the form, and posted in the chatter
   - Optional **Cancellation Reason** column in the orders list (hidden by default)
 - Customer selection limited to store customers
