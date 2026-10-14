@@ -6,10 +6,13 @@
         <field name="arch" type="xml">
             <form string="Cancel Order">
                 <field name="order_id" invisible="1"/>
-                <group>
-                    <field name="reason"
-                           placeholder="Why is this order being cancelled?"/>
-                </group>
+                    <group>
+                        <field name="reason_type" widget="radio"/>
+                        <field name="reason"
+                               invisible="reason_type != 'other'"
+                               required="reason_type == 'other'"
+                               placeholder="Why is this order being cancelled?"/>
+                    </group>
                 <footer>
                     <button string="Cancel Order" name="action_confirm_cancel"
                             type="object" class="btn-primary"/>
