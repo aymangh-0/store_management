@@ -1,47 +1,81 @@
 # Store Management — Odoo 19
 
-A custom Odoo 19 module for managing a small retail store: products, customers, and sales orders.
+A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders.
 
-This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, and scheduled actions.
+This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, scheduled actions, and email templates.
 
 ## Approach
 
-Instead of creating new models from scratch, the module **extends Odoo's existing models** using `_inherit` (extension inheritance), adding or adjusting only what the store needs:
+The module **extends Odoo's existing models** using `_inherit` (extension inheritance), adding only what the store needs, and creates new models only where nothing suitable exists:
 
-| Store concept | Extended model | What the module adds |
+| Store concept | Model | What the module adds |
 |---|---|---|
-| Store Product | `product.template` | Stock quantity, low stock flag, daily low stock alert, unique reference, non-negative sales price |
-| Product Category | `product.category` | Reused as is, with its own menu |
-| Store Customer | `res.partner` | Store customer flag, store orders relation, orders count |
-| Store Order | `sale.order` | `CMD/YYYY/NNNN` sequence, store total, store status, custom workflow, stock deduction, cancellation reason |
-| Store Order Line | `sale.order.line` | Quantity rule, no duplicate products, sales price auto-fill |
-| Cancel Wizard | `store.order.cancel.wizard` *(new transient model)* | Pop-up that asks for the cancellation reason |
+| Store Product | `product.template` *(extended)* | Stock quantity, low stock flag, unique reference, non-negative sales price, automatic stock history |
+| Product Category | `product.category` *(reused)* | Its own menu |
+| Store Customer | `res.partner` *(extended)* | Store customer flag, store orders, orders count, smart button |
+| Store Order | `sale.order` *(extended)* | `CMD/YYYY/NNNN` sequence, store total, store status, custom workflow, stock deduction, confirmation email, cancellation reason |
+| Store Order Line | `sale.order.line` *(extended)* | Quantity rule, no duplicate products, sales price auto-fill |
+| Stock History | `store.stock.history` *(new)* | Read-only log of every stock change |
+| Cancel Wizard | `store.order.cancel.wizard` *(new, transient)* | Pop-up that asks for the cancellation reason |
+| Restock Wizard | `store.restock.wizard` + `store.restock.wizard.line` *(new, transient)* | Pop-up to add received quantities to several products at once |
 
-Store records are kept separate from regular Sales records (`is_store_customer`, `is_store_order`), so the standard Sales app keeps working unchanged.
+Store records are kept separate from regular Sales records (`is_store_customer`, `is_store_order`), and all store screens are standalone views, so the standard Sales app keeps working unchanged.
 
 ## Features
 
 ### Products
-- Stock Quantity field (default `0`)
-- **Low Stock** flag, set automatically when the stock is below `10` (the stock number turns red in the list)
+- **Stock Quantity** field (default `0`)
+- **Low Stock** flag, computed automatically when the stock is below `10`; the stock number turns red in the list
 - Reference is required and unique
 - Sales Price cannot be negative
-- List, Form, and Search views
-- Filters: **Active** and **Low Stock**
+- List, **Kanban** (cards with image, price, stock, and a red *Low Stock* badge), Form, and Search views
+- Filters: **Active** (default) and **Low Stock**
+- **Restock** button on the form and **Restock** action on the list *(Store Manager only)*
+- **Stock History** tab on the form *(Store Manager only)*
+
+### Restock
+- Select one or more products and open **Restock** from the Actions menu (or the button on the form)
+- One line per product with its current stock; enter the quantity received
+- Optional **Reference** (e.g. a supplier invoice number), saved in the stock history
+- Lines left at `0` are skipped; negative quantities are rejected
+
+### Stock History
+Every change to a product's stock is logged automatically, from one place (the product's `create` and `write` methods):
+
+| Type | When | Quantity |
+|---|---|---|
+| **Initial Stock** | A product is created with stock | Positive |
+| **Restock** | Stock is added with the Restock wizard | Positive |
+| **Order Confirmed** | A store order is confirmed | Negative |
+| **Order Cancelled** | A confirmed order is cancelled | Positive |
+| **Manual Adjustment** | The stock is edited by hand | Positive or negative |
+
+- Each entry shows the date, product, type, quantity, stock after the change, related order, reference, and user
+- Available from **Configuration → Stock History** and from the **Stock History** tab on the product form
+- Search by product, order, and reference; filters by type and date; grouping by product and type
+- **Read-only for everyone**, including managers, so the log can be trusted; entries are created by the system only
+
+### Low Stock Alert
+A scheduled action (**Store: Low Stock Alert**) runs once a day:
+- Creates a **warning activity** for every Store Manager on each low stock product
+- Does not create duplicates while an alert for the same product is still open
+- Marks old alerts as done automatically when the product's stock is back above the limit
+
+To run it manually: **Settings → Technical → Scheduled Actions → Store: Low Stock Alert → Run Manually** (Developer Mode).
 
 ### Customers
 - Dedicated list and form for store customers only
-- **Store Orders** tab on the customer form (One2many)
-- Orders count per customer
+- **Store Orders** smart button: opens the customer's orders with all order views (list, form, graph, pivot)
+- **Store Orders** tab on the customer form, opened first by default
 - Search with filters (with / without orders, archived) and grouping by city and country
 
 ### Orders
 - Automatic numbering: `CMD/2026/0001`, `CMD/2026/0002`, …
 - Sales price filled automatically when a product is selected
-- Ordered quantity must be greater than 0
+- Ordered quantity must be greater than `0`
 - The same product cannot be added twice to the same order (change its quantity instead)
-- Order total computed automatically from the order lines
-- Workflow buttons: **Confirm**, **Cancel**, **Reset to Draft**
+- Order total computed automatically from the order lines (without taxes)
+- Workflow buttons: **Confirm**, **Cancel**, **Reset to Draft**, **Print**
 - Status bar: **Draft → Confirmed → Cancelled**
 - Business rules:
   - A confirmed order can no longer be edited (enforced in Python, from any screen)
@@ -52,23 +86,29 @@ Store records are kept separate from regular Sales records (`is_store_customer`,
   - Confirming an order deducts the ordered quantities from stock
   - Cancelling a confirmed order returns the quantities to stock (cancelling a draft order does not change stock)
 - Cancellation reason:
-  - **Cancel** opens a pop-up (wizard) with ready-made reasons: **Customer request**, **Wrong order details**, **Payment issue**, or **Other** (requires a written reason)
+  - **Cancel** opens a pop-up with ready-made reasons: **Customer request**, **Wrong order details**, **Payment issue**, or **Other** (requires a written reason)
   - The reason is saved on the order, shown on the form, and posted in the chatter
   - Optional **Cancellation Reason** column in the orders list (hidden by default)
 - Customer selection limited to store customers
 - Search by order number, customer, and product
 - Filters by status and order date, grouping by customer, status, and date
 
-### Low Stock Alert
-A scheduled action (**Store: Low Stock Alert**) runs once a day:
-- Creates a **warning activity** for every Store Manager on each low stock product
-- Does not create duplicates while an alert for the same product is still open
-- Marks old alerts as done automatically when the product's stock is back above the limit
+### Sales Analysis
+- **Graph** view: store sales per month (bar chart, can be switched to line or pie)
+- **Pivot** view: customers in rows, months in columns, store total in cells
+- Both work with all order filters and groupings (e.g. apply **Confirmed** to see actual sales only)
 
-To run it manually: **Settings → Technical → Scheduled Actions → Store: Low Stock Alert → Run Manually** (Developer Mode).
+### Confirmation Email
+- When a store order is confirmed, the customer receives an email with the order number, the ordered products, and the total
+- The PDF order report is attached automatically
+- The email is posted in the order's chatter
+- Sent only if the customer has an email address; confirmation is never blocked by email
+- The template (**Store: Order Confirmed**) can be edited from **Settings → Technical → Email Templates**
+
+> An outgoing mail server must be configured for emails to actually be delivered. Without one, emails are still created and visible in the chatter and in **Settings → Technical → Emails**.
 
 ### PDF Report
-A printable QWeb PDF report for each order, available from the **Print** button on the order form. It shows:
+A printable QWeb PDF report for each order, available from the **Print** button on the order form and attached to the confirmation email. It shows:
 - Company logo and name (from the company's document layout)
 - Order number, order date, and status
 - Customer name, address, phone, and email
@@ -79,12 +119,13 @@ A printable QWeb PDF report for each order, available from the **Print** button 
 
 | Group | Access |
 |---|---|
-| **Store User** | Views and creates store orders (sees own orders only). Read-only access to products, categories, and customers. Cannot delete orders. |
-| **Store Manager** | Full access to products, customers, and orders (sees all orders), plus the **Configuration** menu. |
+| **Store User** | Views and creates store orders (sees own orders only), confirms and cancels them. Read-only access to products, categories, and customers. Cannot delete orders. |
+| **Store Manager** | Full access to products, customers, and orders (sees all orders), restock, low stock alerts, read-only stock history, and the **Configuration** menu. |
 
 - Store Manager includes all Store User rights.
 - Both groups include the matching Sales groups (**Own Documents** for Store User, **All Documents** for Store Manager), because store orders are built on `sale.order`.
 - Store Manager can edit the store order sequence only; a record rule blocks edits to other sequences.
+- Stock changes caused by a Store User confirming or cancelling an order are applied with system rights, and are still logged under that user's name.
 
 ## Module Structure
 
@@ -97,17 +138,21 @@ store_management/
 │   └── ir.model.access.csv
 ├── data/
 │   ├── sequence.xml
-│   └── cron.xml
+│   ├── cron.xml
+│   └── mail_template.xml
 ├── models/
 │   ├── __init__.py
 │   ├── product_template.py
 │   ├── res_partner.py
 │   ├── sale_order.py
-│   └── sale_order_line.py
+│   ├── sale_order_line.py
+│   └── store_stock_history.py
 ├── wizard/
 │   ├── __init__.py
 │   ├── store_order_cancel_wizard.py
-│   └── store_order_cancel_wizard_views.xml
+│   ├── store_order_cancel_wizard_views.xml
+│   ├── store_restock_wizard.py
+│   └── store_restock_wizard_views.xml
 ├── report/
 │   ├── order_report_templates.xml
 │   └── order_report.xml
@@ -116,14 +161,16 @@ store_management/
     ├── customer_views.xml
     ├── order_views.xml
     ├── config_views.xml
+    ├── stock_history_views.xml
     └── menus.xml
 ```
 
 ## Requirements
 
 - Odoo 19.0
-- Depends on: `sale` (which brings in `product`, `sales_team`, and `base`)
+- Depends on: `sale` (which brings in `product`, `sales_team`, `mail`, and `base`)
 - `wkhtmltopdf` installed on the server for PDF reports
+- An outgoing mail server, only if confirmation emails should actually be delivered
 
 ## Installation
 
@@ -137,7 +184,7 @@ store_management/
 5. Search for **Store Management** and click **Install**.
 6. Assign users to **Store User** or **Store Manager** from **Settings → Users** (under the **Sales** section).
 
-To upgrade after changes:
+To upgrade after changes (restart the server this way whenever Python files are added or changed):
 
 ```bash
 python odoo-bin -c odoo.conf -d <database> -u store_management
@@ -147,13 +194,14 @@ python odoo-bin -c odoo.conf -d <database> -u store_management
 
 The **Store Management** app adds the following menus:
 
-- **Products** — manage store products and stock
+- **Products** — manage store products, stock, and restocking
 - **Categories** — manage product categories
 - **Customers** — manage store customers and view their orders
-- **Orders** — create, confirm, cancel, and print store orders
+- **Orders** — create, confirm, cancel, print, and analyze store orders
 - **Configuration** *(Store Manager only)*
   - **Order Sequence** — edit the `CMD/` numbering
   - **Store Team** — view users in the store groups
+  - **Stock History** — view all stock movements
 
 ## Roadmap
 
@@ -167,7 +215,13 @@ The **Store Management** app adds the following menus:
 - [x] Stock deduction on confirm and restore on cancel
 - [x] Low stock flag
 - [x] Daily low stock alert (scheduled action)
-- [x] Cancellation reason wizard
+- [x] Cancellation reason wizard with ready-made reasons
+- [x] Stock history log
+- [x] Restock wizard
+- [x] Graph and pivot views for orders
+- [x] Store orders smart button on customers
+- [x] Kanban view for products
+- [x] Confirmation email with the PDF report attached
 
 ## License
 
