@@ -95,7 +95,18 @@ class SaleOrder(models.Model):
         self._store_check_stock()
         result = self.action_confirm()
         self._store_update_stock(-1)
+        self._store_send_confirmation_email()
         return result
+
+    def _store_send_confirmation_email(self):
+        template = self.env.ref('store_management.mail_template_store_order_confirmed')
+        for order in self:
+            if order.partner_id.email:
+                order.message_post_with_source(
+                    template,
+                    subtype_xmlid='mail.mt_comment',
+                    email_layout_xmlid='mail.mail_notification_light',
+                )
 
     def action_store_cancel(self):
         for order in self:
