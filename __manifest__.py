@@ -14,6 +14,7 @@
         'data/cron.xml',
         'report/order_report_templates.xml',
         'report/order_report.xml',
+        'wizard/store_restock_wizard_views.xml',
         'views/product_views.xml',
         'views/customer_views.xml',
         'wizard/store_order_cancel_wizard_views.xml',

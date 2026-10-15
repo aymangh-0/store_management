@@ -17,6 +17,13 @@
                 <field name="store_is_low_stock"/>
                 <field name="create_date" readonly="1"/>
             </field>
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="%(store_management.store_restock_wizard_action)d"
+                            type="action" string="Restock"
+                            groups="store_management.group_store_manager"/>
+                </header>
+            </xpath>
             <xpath expr="//label[@for='standard_price']" position="attributes">
                 <attribute name="string">Purchase Price</attribute>
             </xpath>
@@ -32,6 +39,7 @@
                                    decoration-danger="quantity &lt; 0"/>
                             <field name="stock_after"/>
                             <field name="order_id"/>
+                            <field name="note"/>
                             <field name="user_id"/>
                         </list>
                     </field>

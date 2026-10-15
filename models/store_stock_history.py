@@ -16,6 +16,7 @@ class StoreStockHistory(models.Model):
     move_type = fields.Selection(
         selection=[
             ('initial', 'Initial Stock'),
+            ('restock', 'Restock'),
             ('order_confirm', 'Order Confirmed'),
             ('order_cancel', 'Order Cancelled'),
             ('manual', 'Manual Adjustment'),
@@ -32,3 +33,5 @@ class StoreStockHistory(models.Model):
         'res.users', string="User",
         default=lambda self: self.env.user, readonly=True,
     )
+
+    note = fields.Char(string="Reference", readonly=True)

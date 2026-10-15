@@ -13,6 +13,7 @@
                        decoration-danger="quantity &lt; 0"/>
                 <field name="stock_after"/>
                 <field name="order_id"/>
+                <field name="note"/>
                 <field name="user_id"/>
             </list>
         </field>
@@ -25,14 +26,17 @@
             <search string="Stock History">
                 <field name="product_id"/>
                 <field name="order_id"/>
+                <field name="note"/>
+                <filter string="Initial Stock" name="filter_initial"
+                        domain="[('move_type', '=', 'initial')]"/>
+                <filter string="Restock" name="filter_restock"
+                        domain="[('move_type', '=', 'restock')]"/>
                 <filter string="Order Confirmed" name="filter_confirm"
                         domain="[('move_type', '=', 'order_confirm')]"/>
                 <filter string="Order Cancelled" name="filter_cancel"
                         domain="[('move_type', '=', 'order_cancel')]"/>
                 <filter string="Manual Adjustment" name="filter_manual"
                         domain="[('move_type', '=', 'manual')]"/>
-                <filter string="Initial Stock" name="filter_initial"
-                        domain="[('move_type', '=', 'initial')]"/>
                 <separator/>
                 <filter string="Date" name="filter_date" date="date"/>
                 <group>

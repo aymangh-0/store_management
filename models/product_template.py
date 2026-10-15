@@ -73,6 +73,7 @@ class ProductTemplate(models.Model):
 
         move_type = self.env.context.get('store_move_type', 'manual')
         order_id = self.env.context.get('store_order_id', False)
+        note = self.env.context.get('store_move_note', False)
         history = self.env['store.stock.history'].sudo()
         for product in self:
             difference = product.store_stock_qty - old_qty[product.id]
@@ -83,6 +84,7 @@ class ProductTemplate(models.Model):
                     'quantity': difference,
                     'stock_after': product.store_stock_qty,
                     'order_id': order_id,
+                    'note': note,
                 })
         return result
 
