@@ -8,8 +8,8 @@
                 <field name="line_ids">
                     <list editable="bottom" create="0">
                         <field name="product_id" readonly="1" force_save="1"/>
-                        <field name="current_stock"/>
-                        <field name="quantity"/>
+                        <field name="current_stock" width="130px"/>
+                        <field name="quantity" width="160px"/>
                     </list>
                 </field>
                 <group>

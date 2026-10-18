@@ -64,13 +64,22 @@
             <xpath expr="//list" position="attributes">
                 <attribute name="default_order">default_code</attribute>
             </xpath>
+            <field name="default_code" position="attributes">
+                <attribute name="width">140px</attribute>
+            </field>
+            <field name="list_price" position="attributes">
+                <attribute name="width">120px</attribute>
+            </field>
             <field name="standard_price" position="attributes">
                 <attribute name="string">Purchase Price</attribute>
+                <attribute name="width">130px</attribute>
             </field>
             <field name="standard_price" position="after">
-                <field name="store_stock_qty" optional="show"
+                <field name="store_stock_qty" string="Stock" optional="show"
+                       width="90px"
                        decoration-danger="store_is_low_stock"/>
-                <field name="store_is_low_stock" optional="show"/>
+                <field name="store_is_low_stock" optional="show"
+                       width="100px"/>
             </field>
         </field>
     </record>
