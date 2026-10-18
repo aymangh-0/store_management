@@ -1,0 +1,745 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* store_management
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 10:54+0000\n"
+"PO-Revision-Date: 2026-10-18 10:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: store_management
+#: model:ir.actions.report,print_report_name:store_management.action_report_store_order
+msgid "'Order - %s' % object.name"
+msgstr ""
+
+#. module: store_management
+#: model:mail.template,body_html:store_management.mail_template_store_order_confirmed
+msgid ""
+"<div>\n"
+"    <p>Dear <t t-out=\"object.partner_id.name or ''\"/>,</p>\n"
+"    <p>Your order <strong t-out=\"object.name or ''\"/> has been confirmed.</p>\n"
+"    <table border=\"1\" cellpadding=\"6\" style=\"border-collapse: collapse;\">\n"
+"        <tr>\n"
+"            <th>Product</th>\n"
+"            <th>Quantity</th>\n"
+"            <th>Subtotal</th>\n"
+"        </tr>\n"
+"        <t t-foreach=\"object.order_line\" t-as=\"line\">\n"
+"            <tr t-if=\"not line.display_type\">\n"
+"                <td t-out=\"line.product_id.display_name\"/>\n"
+"                <td t-out=\"int(line.product_uom_qty)\"/>\n"
+"                <td t-out=\"format_amount(line.price_subtotal, object.currency_id)\"/>\n"
+"            </tr>\n"
+"        </t>\n"
+"    </table>\n"
+"    <p>Total: <strong t-out=\"format_amount(object.store_total, object.currency_id)\"/></p>\n"
+"    <p>The order details are attached.</p>\n"
+"    <p>Thank you for shopping with us.</p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_kanban_view_store
+msgid "<span class=\"badge text-bg-danger\">Low Stock</span>"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_kanban_view_store
+msgid "<span>Stock: </span>"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "A cancelled order cannot be confirmed. Reset it to draft first."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "A confirmed order cannot be modified."
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_search_view_inherit_store
+msgid "Active"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
+msgid "Archived"
+msgstr ""
+
+#. module: store_management
+#: model:res.groups,comment:store_management.group_store_user
+msgid "Can view and create store orders"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Cancel"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_order_cancel_wizard_action
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form
+msgid "Cancel Order"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_sale_order__store_cancel_reason
+msgid "Cancellation Reason"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_state__cancel
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Cancelled"
+msgstr ""
+
+#. module: store_management
+#: model:ir.ui.menu,name:store_management.store_menu_categories
+msgid "Categories"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
+msgid "City"
+msgstr ""
+
+#. module: store_management
+#: model:ir.ui.menu,name:store_management.store_menu_config
+msgid "Configuration"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Confirm"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_state__confirmed
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Confirmed"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
+msgid "Country"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.actions.act_window,help:store_management.store_customer_action
+msgid "Create your first store customer"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.actions.act_window,help:store_management.store_order_action
+msgid "Create your first store order"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.actions.act_window,help:store_management.store_product_action
+msgid "Create your first store product"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__create_uid
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__create_uid
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__create_uid
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__create_date
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__create_date
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__create_date
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__current_stock
+msgid "Current Stock"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Customer"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_order_cancel_wizard__reason_type__customer_request
+msgid "Customer request"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_customer_action
+#: model:ir.ui.menu,name:store_management.store_menu_customers
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_list_view
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
+msgid "Customers"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__date
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Date"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__reason
+msgid "Details"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form
+#: model_terms:ir.ui.view,arch_db:store_management.store_restock_wizard_form
+msgid "Discard"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_product_template__display_name
+#: model:ir.model.fields,field_description:store_management.field_res_partner__display_name
+#: model:ir.model.fields,field_description:store_management.field_sale_order__display_name
+#: model:ir.model.fields,field_description:store_management.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__display_name
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__display_name
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__display_name
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_state__draft
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Draft"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Email:"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/wizard/store_restock_wizard.py:0
+msgid "Enter a quantity for at least one product."
+msgstr ""
+
+#. module: store_management
+#: model:res.groups,comment:store_management.group_store_manager
+msgid "Full access to products, customers and orders."
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Grand Total"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_product_template__id
+#: model:ir.model.fields,field_description:store_management.field_res_partner__id
+#: model:ir.model.fields,field_description:store_management.field_sale_order__id
+#: model:ir.model.fields,field_description:store_management.field_sale_order_line__id
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__id
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__id
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__id
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__id
+msgid "ID"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_stock_history__move_type__initial
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Initial Stock"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__write_uid
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__write_uid
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__write_uid
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__write_date
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__write_date
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__write_date
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/product_template.py:0
+#: model:ir.model.fields,field_description:store_management.field_product_product__store_is_low_stock
+#: model:ir.model.fields,field_description:store_management.field_product_template__store_is_low_stock
+msgid "Low Stock"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_search_view_inherit_store
+msgid "Low Stock (5 or less)"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_stock_history__move_type__manual
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Manual Adjustment"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "New"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.actions.act_window,help:store_management.store_stock_history_action
+msgid "No stock movements yet"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid ""
+"Not enough stock for \"%(product)s\". Available: %(available)s, ordered: "
+"%(ordered)s."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/product_template.py:0
+msgid "Only %s left in stock."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "Only cancelled orders can be reset to draft"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "Only draft orders can be confirmed."
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__order_id
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__order_id
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Order"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_stock_history__move_type__order_cancel
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Order Cancelled"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_stock_history__move_type__order_confirm
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Order Confirmed"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Order Date"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Order Date:"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Order Details"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Order Lines"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_sequence_action
+#: model:ir.ui.menu,name:store_management.store_menu_config_sequence
+msgid "Order Sequence"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/wizard/store_order_cancel_wizard.py:0
+msgid "Order cancelled. Reason: %s"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order_line.py:0
+msgid "Ordered quantity must be greater than 0."
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_order_action
+#: model:ir.ui.menu,name:store_management.store_menu_orders
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_list_view
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_list_view
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Orders"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_res_partner__store_order_count
+#: model:ir.model.fields,field_description:store_management.field_res_users__store_order_count
+msgid "Orders Count"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_order_cancel_wizard__reason_type__other
+msgid "Other"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_order_cancel_wizard__reason_type__payment_issue
+msgid "Payment issue"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Phone:"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/wizard/store_order_cancel_wizard.py:0
+msgid "Please write the cancellation reason."
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Print"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_product_template
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__product_id
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__product_id
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_kanban_view_store
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Product"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.constraint,message:store_management.constraint_product_template_default_code_unique
+msgid "Product Reference must be unique!"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_product_action
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__line_ids
+#: model:ir.ui.menu,name:store_management.store_menu_products
+msgid "Products"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_form_view_inherit_store
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_list_view_inherit_store
+msgid "Purchase Price"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__quantity
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Quantity"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__quantity
+msgid "Quantity Received"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/wizard/store_restock_wizard.py:0
+msgid "Quantity received cannot be negative."
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__reason_type
+msgid "Reason"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__reference
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__note
+msgid "Reference"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Reset to Draft"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_restock_wizard_action
+#: model:ir.model.fields.selection,name:store_management.selection__store_stock_history__move_type__restock
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_form_view_inherit_store
+#: model_terms:ir.ui.view,arch_db:store_management.store_restock_wizard_form
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Restock"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_restock_wizard_form
+msgid "Restock Products"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_sale_order
+msgid "Sales Order"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_sale_order_line
+msgid "Sales Order Line"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/product_template.py:0
+msgid "Sales Price cannot be negative."
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Status"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Status:"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_list_view_inherit_store
+msgid "Stock"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__stock_after
+msgid "Stock After"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_stock_history_action
+#: model:ir.model.fields,field_description:store_management.field_product_product__store_stock_history_ids
+#: model:ir.model.fields,field_description:store_management.field_product_template__store_stock_history_ids
+#: model:ir.ui.menu,name:store_management.store_menu_stock_history
+#: model_terms:ir.ui.view,arch_db:store_management.product_template_form_view_inherit_store
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_list_view
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Stock History"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_product_product__store_stock_qty
+#: model:ir.model.fields,field_description:store_management.field_product_template__store_stock_qty
+msgid "Stock Quantity"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/product_template.py:0
+msgid "Stock is back above the limit."
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_res_partner__is_store_customer
+#: model:ir.model.fields,field_description:store_management.field_res_users__is_store_customer
+msgid "Store Customer"
+msgstr ""
+
+#. module: store_management
+#: model:ir.ui.menu,name:store_management.store_menu_root
+#: model:res.groups.privilege,name:store_management.privilege_store_management
+msgid "Store Management"
+msgstr ""
+
+#. module: store_management
+#: model:res.groups,name:store_management.group_store_manager
+msgid "Store Manager"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.report,name:store_management.action_report_store_order
+#: model:ir.model.fields,field_description:store_management.field_sale_order__is_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Store Order"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_store_order_cancel_wizard
+msgid "Store Order Cancel Wizard"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_res_partner__store_order_ids
+#: model:ir.model.fields,field_description:store_management.field_res_users__store_order_ids
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_form_view
+msgid "Store Orders"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_store_restock_wizard
+msgid "Store Restock Wizard"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_store_restock_wizard_line
+msgid "Store Restock Wizard Line"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_graph_view
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_pivot_view
+msgid "Store Sales"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_sale_order__store_state
+msgid "Store Status"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_store_stock_history
+msgid "Store Stock History"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.server,name:store_management.store_team_action
+#: model:ir.ui.menu,name:store_management.store_menu_config_team
+msgid "Store Team"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_sale_order__store_total
+msgid "Store Total"
+msgstr ""
+
+#. module: store_management
+#: model:res.groups,name:store_management.group_store_user
+msgid "Store User"
+msgstr ""
+
+#. module: store_management
+#: model:ir.actions.server,name:store_management.ir_cron_store_low_stock_ir_actions_server
+msgid "Store: Low Stock Alert"
+msgstr ""
+
+#. module: store_management
+#: model:mail.template,name:store_management.mail_template_store_order_confirmed
+msgid "Store: Order Confirmed"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Subtotal"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order_line.py:0
+msgid "The product \"%s\" is already in this order. Change its quantity instead."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "This order is already cancelled"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_form_view
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_list_view
+msgid "Total"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__move_type
+#: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
+msgid "Type"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.report_store_order
+msgid "Unit Price"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_stock_history__user_id
+msgid "User"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form
+msgid "Why is this order being cancelled?"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
+msgid "With Orders"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
+msgid "Without Orders"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__wizard_id
+msgid "Wizard"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__store_order_cancel_wizard__reason_type__wrong_order
+msgid "Wrong order details"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "You cannot confirm an order without products."
+msgstr ""
+
+#. module: store_management
+#: model:mail.template,subject:store_management.mail_template_store_order_confirmed
+msgid "Your order {{object.name}} is confirmed"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_restock_wizard_form
+msgid "e.g. Supplier invoice INV-0042"
+msgstr ""

@@ -7,6 +7,7 @@
             <field name="subject">Your order {{object.name}} is confirmed</field>
             <field name="email_from">{{ (object.user_id.email_formatted or user.email_formatted) }}</field>
             <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="report_template_ids"
                    eval="[(4, ref('store_management.action_report_store_order'))]"/>
             <field name="auto_delete" eval="False"/>
