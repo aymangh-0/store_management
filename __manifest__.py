@@ -2,7 +2,7 @@
     'name': 'Store Management',
     'version': '19.0.1.0.0',
     'summary': 'Manage store products, customers and orders',
-    'description': 'A training module for managing a small retail store: products, customers, sales orders, a PDF order report, and store security groups.',
+    'description': 'A training module for managing a small retail store: products with stock tracking, restocking, a stock history log and daily low stock alerts; store customers; sales orders with their own numbering, workflow, cancellation reasons, confirmation emails, sales analysis, and a PDF order report; and store security groups.',
     'author': 'Ayman Alghamdi',
     'category': 'Sales',
     'license': 'LGPL-3',
