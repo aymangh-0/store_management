@@ -93,7 +93,7 @@
         <field name="inherit_id" ref="product.product_template_search_view"/>
         <field name="arch" type="xml">
             <filter name="inactive" position="before">
-            <filter string="Low Stock" name="store_low_stock"
+            <filter string="Low Stock (5 or less)" name="store_low_stock"
                     domain="[('store_is_low_stock', '=', True)]"/>
                 <separator/>
                 <filter string="Active" name="store_active"

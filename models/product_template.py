@@ -35,7 +35,7 @@ class ProductTemplate(models.Model):
     @api.depends('store_stock_qty')
     def _compute_store_is_low_stock(self):
         for product in self:
-            product.store_is_low_stock = product.store_stock_qty < 10
+            product.store_is_low_stock = product.store_stock_qty <= 5
 
     @api.model
     def _cron_store_low_stock_alert(self):

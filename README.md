@@ -25,11 +25,11 @@ Store records are kept separate from regular Sales records (`is_store_customer`,
 
 ### Products
 - **Stock Quantity** field (default `0`)
-- **Low Stock** flag, computed automatically when the stock is below `10`; the stock number turns red in the list
+- **Low Stock** flag, computed automatically when the stock is `5` or less; the stock number turns red in the list
 - Reference is required and unique
 - Sales Price cannot be negative
 - List, **Kanban** (cards with image, price, stock, and a red *Low Stock* badge), Form, and Search views
-- Filters: **Active** (default) and **Low Stock**
+- Filters: **Active** (default) and **Low Stock (≤ 5)**
 - **Restock** button on the form and **Restock** action on the list *(Store Manager only)*
 - **Stock History** tab on the form *(Store Manager only)*
 
