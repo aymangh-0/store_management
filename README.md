@@ -2,7 +2,7 @@
 
 A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders.
 
-This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, scheduled actions, and email templates.
+This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, scheduled actions, email templates, translations, and automated tests.
 
 ## Approach
 
@@ -103,6 +103,7 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
 - The PDF order report is attached automatically
 - The email is posted in the order's chatter
 - Sent only if the customer has an email address; confirmation is never blocked by email
+- Sent in the customer's language (the **Language** set on the customer)
 - The template (**Store: Order Confirmed**) can be edited from **Settings → Technical → Email Templates**
 
 > An outgoing mail server must be configured for emails to actually be delivered. Without one, emails are still created and visible in the chatter and in **Settings → Technical → Emails**.
@@ -114,6 +115,13 @@ A printable QWeb PDF report for each order, available from the **Print** button 
 - Customer name, address, phone, and email
 - Ordered products with quantity, unit price, and line subtotal
 - Grand total
+
+### Arabic Translation
+- Full Arabic translation in `i18n/ar.po`: menus, fields, buttons, statuses, filters, error messages, the PDF report, and the confirmation email
+- Install Arabic from **Settings → Languages**, then choose it in the user's preferences; the interface switches to right-to-left
+- Each user sees the module in their own language; each customer receives emails in theirs
+
+To update after adding new texts: export a new template from **Settings → Translations → Export Translation** (format **PO**, app **Store Management**), translate the new entries in `ar.po`, and upgrade the module.
 
 ### Security
 
@@ -127,6 +135,27 @@ A printable QWeb PDF report for each order, available from the **Print** button 
 - Store Manager can edit the store order sequence only; a record rule blocks edits to other sequences.
 - Stock changes caused by a Store User confirming or cancelling an order are applied with system rights, and are still logged under that user's name.
 
+## Tests
+
+Automated tests in `tests/test_store_order.py` (14 tests) cover the main business rules:
+
+| Area | What is tested |
+|---|---|
+| Order rules | Duplicate products are rejected; confirming more than the stock is rejected and nothing changes; a confirmed order cannot be modified |
+| Stock | Confirming deducts the stock; cancelling a confirmed order restores it; cancelling a draft does not change it |
+| Stock history | Initial stock, order confirmation, and manual changes are logged with the right type, quantity, stock after, and order |
+| Low stock | The limit is exactly `5` (`6` is not low, `5` is) |
+| Cancel wizard | A ready-made reason is saved and the stock is restored; **Other** with an empty reason is rejected |
+| Restock wizard | Selected products are loaded, stock is added, and the reference is logged; no quantity is rejected |
+
+Each test runs in a transaction that is rolled back, so the database is never changed. Run them with:
+
+```bash
+python odoo-bin -c odoo.conf -d <database> -u store_management --test-enable --test-tags /store_management --stop-after-init --no-http
+```
+
+The last result line should read `0 failed, 0 error(s) of 14 tests`.
+
 ## Module Structure
 
 ```
@@ -136,6 +165,9 @@ store_management/
 ├── security/
 │   ├── security.xml
 │   └── ir.model.access.csv
+├── i18n/
+│   ├── ar.po
+│   └── store_management.pot
 ├── data/
 │   ├── sequence.xml
 │   ├── cron.xml
@@ -153,6 +185,9 @@ store_management/
 │   ├── store_order_cancel_wizard_views.xml
 │   ├── store_restock_wizard.py
 │   └── store_restock_wizard_views.xml
+├── tests/
+│   ├── __init__.py
+│   └── test_store_order.py
 ├── report/
 │   ├── order_report_templates.xml
 │   └── order_report.xml
@@ -222,6 +257,8 @@ The **Store Management** app adds the following menus:
 - [x] Store orders smart button on customers
 - [x] Kanban view for products
 - [x] Confirmation email with the PDF report attached
+- [x] Arabic translation, with emails in the customer's language
+- [x] Automated tests
 
 ## License
 
