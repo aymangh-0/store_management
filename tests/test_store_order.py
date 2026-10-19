@@ -100,3 +100,55 @@ class TestStoreOrder(TransactionCase):
         self.assertFalse(self.product.store_is_low_stock)
         self.product.store_stock_qty = 5
         self.assertTrue(self.product.store_is_low_stock)
+
+    def test_confirmed_order_cannot_be_modified(self):
+        order = self._create_order(quantity=2)
+        order.action_store_confirm()
+        with self.assertRaises(UserError):
+            order.write({'partner_id': self.customer.id})
+
+    def test_cancel_wizard_saves_reason(self):
+        order = self._create_order(quantity=2)
+        order.action_store_confirm()
+        wizard = self.env['store.order.cancel.wizard'].create({
+            'order_id': order.id,
+            'reason_type': 'customer_request',
+        })
+        wizard.action_confirm_cancel()
+        self.assertEqual(order.state, 'cancel')
+        self.assertEqual(order.store_cancel_reason, 'Customer request')
+        self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_cancel_wizard_other_requires_details(self):
+        order = self._create_order(quantity=2)
+        wizard = self.env['store.order.cancel.wizard'].create({
+            'order_id': order.id,
+            'reason_type': 'other',
+            'reason': '   ',
+        })
+        with self.assertRaises(UserError):
+            wizard.action_confirm_cancel()
+        self.assertEqual(order.state, 'draft')
+
+    def test_restock_adds_stock_and_logs_reference(self):
+        wizard = self.env['store.restock.wizard'].with_context(
+            active_model='product.template',
+            active_ids=self.product.ids,
+        ).create({'reference': 'INV-TEST'})
+        self.assertEqual(len(wizard.line_ids), 1)
+        wizard.line_ids.quantity = 5
+        wizard.action_restock()
+        self.assertEqual(self.product.store_stock_qty, 15)
+        history = self._history('restock')
+        self.assertEqual(len(history), 1)
+        self.assertEqual(history.quantity, 5)
+        self.assertEqual(history.note, 'INV-TEST')
+
+    def test_restock_without_quantity_is_rejected(self):
+        wizard = self.env['store.restock.wizard'].with_context(
+            active_model='product.template',
+            active_ids=self.product.ids,
+        ).create({})
+        with self.assertRaises(UserError):
+            wizard.action_restock()
+        self.assertEqual(self.product.store_stock_qty, 10)
