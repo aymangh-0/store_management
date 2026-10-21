@@ -158,4 +158,20 @@
             </li>
         </xpath>
     </template>
+
+    <template id="portal_my_home_store" name="Store Orders in Portal Home"
+              inherit_id="portal.portal_my_home" priority="25">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_client_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/sale/static/src/img/bag.svg'"/>
+                <t t-set="title">Store Orders</t>
+                <t t-set="url" t-value="'/my/store/orders'"/>
+                <t t-set="text">View your store orders or place a new one</t>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </div>
+    </template>
 </odoo>
