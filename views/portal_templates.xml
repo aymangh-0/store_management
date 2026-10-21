@@ -174,4 +174,10 @@
             </t>
         </div>
     </template>
+
+    <template id="portal_my_home_hide_sale_orders" name="Hide Sales Orders in Portal Home"
+              inherit_id="portal.portal_my_home" priority="100">
+        <xpath expr="//t[@t-call='portal.portal_docs_entry'][t[contains(@t-value, '/my/orders')]]"
+               position="replace"/>
+    </template>
 </odoo>
