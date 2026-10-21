@@ -6,7 +6,7 @@
     'author': 'Ayman Alghamdi',
     'category': 'Sales',
     'license': 'LGPL-3',
-    'depends': ['sale'],
+    'depends': ['sale','portal'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
@@ -23,6 +23,7 @@
         'views/config_views.xml',
         'views/stock_history_views.xml',
         'views/menus.xml',
+        'views/portal_templates.xml',
     ],
     'installable': True,
     'application': True,
