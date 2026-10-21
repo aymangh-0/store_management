@@ -2,7 +2,10 @@
 <odoo>
     <template id="portal_my_store_orders" name="My Store Orders">
         <t t-call="portal.portal_layout">
-            <h3 class="mt-4 mb-3">Store Orders</h3>
+            <div class="d-flex align-items-center mt-4 mb-3">
+                <h3 class="mb-0">Store Orders</h3>
+                <a href="/my/store/orders/new" class="btn btn-primary ms-auto">New Order</a>
+            </div>
 
             <p t-if="not orders">You have no store orders yet.</p>
 
@@ -41,7 +44,7 @@
 
     <template id="portal_my_store_order" name="My Store Order">
         <t t-call="portal.portal_layout">
-            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4 mb-3">
                 <h3 class="mb-0"><span t-field="order.name"/></h3>
                 <span t-field="order.store_state"
                       t-attf-class="badge rounded-pill #{
@@ -93,6 +96,49 @@
         </t>
     </template>
 
+    <template id="portal_store_new_order" name="New Store Order">
+        <t t-call="portal.portal_layout">
+            <h3 class="mt-4 mb-3">New Order</h3>
+
+            <div t-if="error" class="alert alert-danger" t-out="error"/>
+
+            <p t-if="not products">No products are available right now.</p>
+
+            <form t-if="products" action="/my/store/orders/submit" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Available</th>
+                                <th class="text-end" style="width: 140px;">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="products" t-as="product">
+                                <td><t t-out="product.display_name"/></td>
+                                <td class="text-end">
+                                    <span t-field="product.list_price"
+                                          t-options="{'widget': 'monetary', 'display_currency': product.currency_id}"/>
+                                </td>
+                                <td class="text-end"><t t-out="product.store_stock_qty"/></td>
+                                <td class="text-end">
+                                    <input type="number" class="form-control text-end"
+                                           t-att-name="'qty_%s' % product.id"
+                                           min="0" t-att-max="product.store_stock_qty"
+                                           placeholder="0"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="btn btn-primary">Place Order</button>
+            </form>
+        </t>
+    </template>
+
     <template id="portal_breadcrumbs_store" inherit_id="portal.portal_breadcrumbs">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li t-if="page_name == 'store_orders'" class="breadcrumb-item active">
@@ -103,6 +149,12 @@
             </li>
             <li t-if="page_name == 'store_order'" class="breadcrumb-item active">
                 <t t-out="order.name"/>
+            </li>
+            <li t-if="page_name == 'store_new_order'" class="breadcrumb-item">
+                <a href="/my/store/orders">Store Orders</a>
+            </li>
+            <li t-if="page_name == 'store_new_order'" class="breadcrumb-item active">
+                New Order
             </li>
         </xpath>
     </template>
