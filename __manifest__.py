@@ -25,6 +25,11 @@
         'views/menus.xml',
         'views/portal_templates.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'store_management/static/src/js/store_order_total.js',
+        ],
+    },
     'installable': True,
     'application': True,
 }
