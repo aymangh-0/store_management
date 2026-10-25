@@ -1,8 +1,8 @@
 # Store Management — Odoo 19
 
-A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders.
+A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders, with a customer portal for placing orders online.
 
-This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, scheduled actions, email templates, translations, and automated tests.
+This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, scheduled actions, email templates, translations, automated tests, portal controllers, and frontend JavaScript.
 
 ## Approach
 
@@ -18,6 +18,8 @@ The module **extends Odoo's existing models** using `_inherit` (extension inheri
 | Stock History | `store.stock.history` *(new)* | Read-only log of every stock change |
 | Cancel Wizard | `store.order.cancel.wizard` *(new, transient)* | Pop-up that asks for the cancellation reason |
 | Restock Wizard | `store.restock.wizard` + `store.restock.wizard.line` *(new, transient)* | Pop-up to add received quantities to several products at once |
+
+The customer portal is built on Odoo's `portal` module: a controller that inherits `CustomerPortal`, QWeb page templates, and one frontend JavaScript interaction.
 
 Store records are kept separate from regular Sales records (`is_store_customer`, `is_store_order`), and all store screens are standalone views, so the standard Sales app keeps working unchanged.
 
@@ -117,11 +119,43 @@ A printable QWeb PDF report for each order, available from the **Print** button 
 - Grand total
 
 ### Arabic Translation
-- Full Arabic translation in `i18n/ar.po`: menus, fields, buttons, statuses, filters, error messages, the PDF report, and the confirmation email
+- Full Arabic translation in `i18n/ar.po`: menus, fields, buttons, statuses, filters, error messages, the PDF report, the confirmation email, and the portal pages
 - Install Arabic from **Settings → Languages**, then choose it in the user's preferences; the interface switches to right-to-left
 - Each user sees the module in their own language; each customer receives emails in theirs
+- On the website, the portal language comes from the URL (e.g. `/ar/my/store/orders`) or the language selector; Arabic must be added to the website's languages
 
 To update after adding new texts: export a new template from **Settings → Translations → Export Translation** (format **PO**, app **Store Management**), translate the new entries in `ar.po`, and upgrade the module.
+
+### Customer Portal
+Store customers with portal access can log in to the website and manage their own orders at `/my/store/orders`.
+
+| Page | URL | What it shows |
+|---|---|---|
+| Portal home | `/my` | A **Store Orders** card (the standard **Sales Orders** card is hidden) |
+| Store Orders | `/my/store/orders` | The customer's store orders with number, date, total, and colored status, plus a **New Order** button |
+| Order | `/my/store/orders/<id>` | Order date, status, cancellation reason (if any), ordered products, total, and **Download PDF** |
+| New Order | `/my/store/orders/new` | Products in stock with price and available quantity, and a quantity field for each |
+
+- Breadcrumbs on every page: **Home / Store Orders / …**
+- **Live total**: the order total updates while the customer types, with thousands separators and the currency
+- A quantity above the available stock turns the field red immediately, and the browser blocks submitting it
+- Placing an order creates a store order and **confirms it directly**: the stock is deducted, the history is logged, and the confirmation email is sent
+- If the order fails (for example not enough stock), nothing is saved and the page shows the error
+
+Protection is applied on the server, not only in the page:
+
+| Layer | Where | Purpose |
+|---|---|---|
+| Red field and live total | JavaScript in the browser | Guidance while typing only |
+| Maximum quantity on the field | Browser | Stops the form from being submitted |
+| Login required, own orders only, stock check | Python controller and model | The real protection |
+
+- Every page requires login; a customer only ever sees their own store orders (another customer's order number redirects silently to the list)
+- Products and orders are read with system rights, always filtered by the logged-in customer
+- Order creation and confirmation run inside a savepoint, so a failed confirmation leaves no half-created order
+- Forms include Odoo's CSRF token
+
+To give a customer access: open the contact, then **Action → Grant portal access** (the contact needs an email, which becomes the login).
 
 ### Security
 
@@ -165,6 +199,13 @@ store_management/
 ├── security/
 │   ├── security.xml
 │   └── ir.model.access.csv
+├── controllers/
+│   ├── __init__.py
+│   └── portal.py
+├── static/
+│   └── src/
+│       └── js/
+│           └── store_order_total.js
 ├── i18n/
 │   ├── ar.po
 │   └── store_management.pot
@@ -197,13 +238,15 @@ store_management/
     ├── order_views.xml
     ├── config_views.xml
     ├── stock_history_views.xml
-    └── menus.xml
+    ├── menus.xml
+    └── portal_templates.xml
 ```
 
 ## Requirements
 
 - Odoo 19.0
-- Depends on: `sale` (which brings in `product`, `sales_team`, `mail`, and `base`)
+- Depends on: `sale` (which brings in `product`, `sales_team`, `mail`, and `base`) and `portal`
+- The **Website** app is optional; with it, the portal uses the website layout and language selector
 - `wkhtmltopdf` installed on the server for PDF reports
 - An outgoing mail server, only if confirmation emails should actually be delivered
 
@@ -238,6 +281,8 @@ The **Store Management** app adds the following menus:
   - **Store Team** — view users in the store groups
   - **Stock History** — view all stock movements
 
+Store customers use the portal from the website: **My Account → Store Orders**.
+
 ## Roadmap
 
 - [x] Product management
@@ -259,6 +304,8 @@ The **Store Management** app adds the following menus:
 - [x] Confirmation email with the PDF report attached
 - [x] Arabic translation, with emails in the customer's language
 - [x] Automated tests
+- [x] Customer portal: order list, order details, PDF download, and new orders
+- [x] Live order total in the portal (frontend JavaScript)
 
 ## License
 
