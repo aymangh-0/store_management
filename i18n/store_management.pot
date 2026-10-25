@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 10:54+0000\n"
-"PO-Revision-Date: 2026-10-18 10:54+0000\n"
+"POT-Creation-Date: 2026-10-25 07:27+0000\n"
+"PO-Revision-Date: 2026-10-25 07:27+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -53,8 +53,18 @@ msgid "<span class=\"badge text-bg-danger\">Low Stock</span>"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "<span class=\"o_store_total\">0.00</span>"
+msgstr ""
+
+#. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.product_template_kanban_view_store
 msgid "<span>Stock: </span>"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "<span>Total:</span>"
 msgstr ""
 
 #. module: store_management
@@ -80,6 +90,11 @@ msgid "Archived"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "Available"
+msgstr ""
+
+#. module: store_management
 #: model:res.groups,comment:store_management.group_store_user
 msgid "Can view and create store orders"
 msgstr ""
@@ -98,6 +113,11 @@ msgstr ""
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_sale_order__store_cancel_reason
 msgid "Cancellation Reason"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Cancellation Reason:"
 msgstr ""
 
 #. module: store_management
@@ -199,6 +219,7 @@ msgstr ""
 
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__date
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
 msgid "Date"
 msgstr ""
@@ -227,6 +248,11 @@ msgid "Display Name"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Download PDF"
+msgstr ""
+
+#. module: store_management
 #: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_state__draft
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
 msgid "Draft"
@@ -239,6 +265,7 @@ msgstr ""
 
 #. module: store_management
 #. odoo-python
+#: code:addons/store_management/controllers/portal.py:0
 #: code:addons/store_management/wizard/store_restock_wizard.py:0
 msgid "Enter a quantity for at least one product."
 msgstr ""
@@ -313,6 +340,18 @@ msgid "New"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_breadcrumbs_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "New Order"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "No products are available right now."
+msgstr ""
+
+#. module: store_management
 #: model_terms:ir.actions.act_window,help:store_management.store_stock_history_action
 msgid "No stock movements yet"
 msgstr ""
@@ -346,6 +385,7 @@ msgstr ""
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__order_id
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__order_id
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Order"
 msgstr ""
@@ -368,6 +408,7 @@ msgid "Order Date"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Order Date:"
 msgstr ""
@@ -431,9 +472,19 @@ msgid "Phone:"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "Place Order"
+msgstr ""
+
+#. module: store_management
 #. odoo-python
 #: code:addons/store_management/wizard/store_order_cancel_wizard.py:0
 msgid "Please write the cancellation reason."
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "Price"
 msgstr ""
 
 #. module: store_management
@@ -445,6 +496,8 @@ msgstr ""
 #: model:ir.model,name:store_management.model_product_template
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__product_id
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__product_id
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
 #: model_terms:ir.ui.view,arch_db:store_management.product_template_kanban_view_store
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
@@ -472,6 +525,8 @@ msgstr ""
 
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__quantity
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Quantity"
 msgstr ""
@@ -534,6 +589,7 @@ msgid "Sales Price cannot be negative."
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
 msgid "Status"
 msgstr ""
@@ -608,6 +664,9 @@ msgstr ""
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_res_partner__store_order_ids
 #: model:ir.model.fields,field_description:store_management.field_res_users__store_order_ids
+#: model_terms:ir.ui.view,arch_db:store_management.portal_breadcrumbs_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_home_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_form_view
 msgid "Store Orders"
 msgstr ""
@@ -665,6 +724,7 @@ msgid "Store: Order Confirmed"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Subtotal"
 msgstr ""
@@ -682,6 +742,8 @@ msgid "This order is already cancelled"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_form_view
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_list_view
 msgid "Total"
@@ -694,6 +756,7 @@ msgid "Type"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Unit Price"
 msgstr ""
@@ -701,6 +764,11 @@ msgstr ""
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__user_id
 msgid "User"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_home_store
+msgid "View your store orders or place a new one"
 msgstr ""
 
 #. module: store_management
@@ -732,6 +800,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/store_management/models/sale_order.py:0
 msgid "You cannot confirm an order without products."
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
+msgid "You have no store orders yet."
 msgstr ""
 
 #. module: store_management

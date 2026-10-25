@@ -76,9 +76,19 @@ msgid "<span class=\"badge text-bg-danger\">Low Stock</span>"
 msgstr "<span class=\"badge text-bg-danger\">مخزون منخفض</span>"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "<span class=\"o_store_total\">0.00</span>"
+msgstr ""
+
+#. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.product_template_kanban_view_store
 msgid "<span>Stock: </span>"
 msgstr "<span>المخزون: </span>"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "<span>Total:</span>"
+msgstr "<span>الإجمالي:</span>"
 
 #. module: store_management
 #. odoo-python
@@ -103,6 +113,11 @@ msgid "Archived"
 msgstr "مؤرشف"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "Available"
+msgstr "المتوفر"
+
+#. module: store_management
 #: model:res.groups,comment:store_management.group_store_user
 msgid "Can view and create store orders"
 msgstr "يمكنه عرض طلبات المتجر وإنشاؤها"
@@ -122,6 +137,11 @@ msgstr "إلغاء الطلب"
 #: model:ir.model.fields,field_description:store_management.field_sale_order__store_cancel_reason
 msgid "Cancellation Reason"
 msgstr "سبب الإلغاء"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Cancellation Reason:"
+msgstr "سبب الإلغاء:"
 
 #. module: store_management
 #: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_state__cancel
@@ -222,6 +242,7 @@ msgstr "العملاء"
 
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__date
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_stock_history_search_view
 msgid "Date"
 msgstr "التاريخ"
@@ -250,6 +271,11 @@ msgid "Display Name"
 msgstr "الاسم المعروض"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Download PDF"
+msgstr "تنزيل PDF"
+
+#. module: store_management
 #: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_state__draft
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
 msgid "Draft"
@@ -262,6 +288,7 @@ msgstr "البريد الإلكتروني:"
 
 #. module: store_management
 #. odoo-python
+#: code:addons/store_management/controllers/portal.py:0
 #: code:addons/store_management/wizard/store_restock_wizard.py:0
 msgid "Enter a quantity for at least one product."
 msgstr "أدخل كمية لمنتج واحد على الأقل."
@@ -336,6 +363,18 @@ msgid "New"
 msgstr "جديد"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_breadcrumbs_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "New Order"
+msgstr "طلب جديد"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "No products are available right now."
+msgstr "لا توجد منتجات متوفرة حاليًا."
+
+#. module: store_management
 #: model_terms:ir.actions.act_window,help:store_management.store_stock_history_action
 msgid "No stock movements yet"
 msgstr "لا توجد حركات مخزون بعد"
@@ -371,6 +410,7 @@ msgstr "لا يمكن تأكيد إلا الطلبات المسودة."
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__order_id
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__order_id
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Order"
 msgstr "الطلب"
@@ -393,6 +433,7 @@ msgid "Order Date"
 msgstr "تاريخ الطلب"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Order Date:"
 msgstr "تاريخ الطلب:"
@@ -456,10 +497,20 @@ msgid "Phone:"
 msgstr "الجوال:"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "Place Order"
+msgstr "إرسال الطلب"
+
+#. module: store_management
 #. odoo-python
 #: code:addons/store_management/wizard/store_order_cancel_wizard.py:0
 msgid "Please write the cancellation reason."
 msgstr "يرجى كتابة سبب الإلغاء."
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
+msgid "Price"
+msgstr "السعر"
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
@@ -470,6 +521,8 @@ msgstr "طباعة"
 #: model:ir.model,name:store_management.model_product_template
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__product_id
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__product_id
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
 #: model_terms:ir.ui.view,arch_db:store_management.product_template_kanban_view_store
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
@@ -497,6 +550,8 @@ msgstr "سعر الشراء"
 
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__quantity
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Quantity"
 msgstr "الكمية"
@@ -559,6 +614,7 @@ msgid "Sales Price cannot be negative."
 msgstr "لا يمكن أن يكون سعر البيع سالبًا."
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
 msgid "Status"
 msgstr "الحالة"
@@ -633,6 +689,9 @@ msgstr "نافذة إلغاء طلب المتجر"
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_res_partner__store_order_ids
 #: model:ir.model.fields,field_description:store_management.field_res_users__store_order_ids
+#: model_terms:ir.ui.view,arch_db:store_management.portal_breadcrumbs_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_home_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_form_view
 msgid "Store Orders"
 msgstr "طلبات المتجر"
@@ -690,6 +749,7 @@ msgid "Store: Order Confirmed"
 msgstr "المتجر: تأكيد الطلب"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Subtotal"
 msgstr "المجموع الفرعي"
@@ -707,6 +767,8 @@ msgid "This order is already cancelled"
 msgstr "هذا الطلب ملغي مسبقًا"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_form_view
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_list_view
 msgid "Total"
@@ -719,6 +781,7 @@ msgid "Type"
 msgstr "النوع"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Unit Price"
 msgstr "سعر الوحدة"
@@ -727,6 +790,11 @@ msgstr "سعر الوحدة"
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__user_id
 msgid "User"
 msgstr "المستخدم"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_home_store
+msgid "View your store orders or place a new one"
+msgstr "اعرض طلباتك من المتجر أو أنشئ طلبًا جديدًا"
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form
@@ -758,6 +826,11 @@ msgstr "بيانات الطلب غير صحيحة"
 #: code:addons/store_management/models/sale_order.py:0
 msgid "You cannot confirm an order without products."
 msgstr "لا يمكن تأكيد طلب بدون منتجات."
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
+msgid "You have no store orders yet."
+msgstr "لا توجد لديك طلبات من المتجر حتى الآن."
 
 #. module: store_management
 #: model:mail.template,subject:store_management.mail_template_store_order_confirmed
