@@ -16,3 +16,4 @@ access_store_cancel_wizard_user,store.order.cancel.wizard user,model_store_order
 access_store_stock_history_manager,store.stock.history manager,model_store_stock_history,group_store_manager,1,0,0,0
 access_store_restock_wizard_manager,store.restock.wizard manager,model_store_restock_wizard,group_store_manager,1,1,1,1
 access_store_restock_wizard_line_manager,store.restock.wizard.line manager,model_store_restock_wizard_line,group_store_manager,1,1,1,1
+access_store_settings_wizard_manager,store.settings.wizard manager,model_store_settings_wizard,group_store_manager,1,1,1,0

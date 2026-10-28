@@ -23,6 +23,7 @@
         'views/order_views.xml',
         'views/config_views.xml',
         'views/stock_history_views.xml',
+        'wizard/store_settings_wizard_views.xml',
         'views/menus.xml',
         'views/portal_templates.xml',
     ],

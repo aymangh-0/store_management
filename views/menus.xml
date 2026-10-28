@@ -54,4 +54,10 @@
           action="store_stock_history_action"
           sequence="30"/>
 
+    <menuitem id="store_menu_config_settings"
+          name="Store Settings"
+          parent="store_menu_config"
+          action="store_settings_wizard_action"
+          sequence="5"/>
+
 </odoo>
