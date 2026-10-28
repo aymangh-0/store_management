@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-28 08:10+0000\n"
-"PO-Revision-Date: 2026-10-28 08:10+0000\n"
+"POT-Creation-Date: 2026-10-28 13:15+0000\n"
+"PO-Revision-Date: 2026-10-28 13:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -450,12 +450,6 @@ msgid "Order cancelled. Reason: %s"
 msgstr ""
 
 #. module: store_management
-#. odoo-python
-#: code:addons/store_management/models/sale_order_line.py:0
-msgid "Ordered quantity must be greater than 0."
-msgstr ""
-
-#. module: store_management
 #: model:ir.actions.act_window,name:store_management.store_order_action
 #: model:ir.ui.menu,name:store_management.store_menu_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_list_view
@@ -779,7 +773,25 @@ msgstr ""
 #. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order_line.py:0
+msgid "The lines of a confirmed store order cannot be modified."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order_line.py:0
+msgid "The ordered quantity must be a whole number greater than 0."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order_line.py:0
 msgid "The product \"%s\" is already in this order. Change its quantity instead."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "This action is only available for store orders."
 msgstr ""
 
 #. module: store_management

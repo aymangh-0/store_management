@@ -475,12 +475,6 @@ msgid "Order cancelled. Reason: %s"
 msgstr "تم إلغاء الطلب. السبب: %s"
 
 #. module: store_management
-#. odoo-python
-#: code:addons/store_management/models/sale_order_line.py:0
-msgid "Ordered quantity must be greater than 0."
-msgstr "يجب أن تكون الكمية المطلوبة أكبر من 0."
-
-#. module: store_management
 #: model:ir.actions.act_window,name:store_management.store_order_action
 #: model:ir.ui.menu,name:store_management.store_menu_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_list_view
@@ -804,8 +798,26 @@ msgstr "لا يمكن أن يكون الحد اليومي للطلبات بال�
 #. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order_line.py:0
+msgid "The lines of a confirmed store order cannot be modified."
+msgstr "لا يمكن تعديل سطور طلب متجر مؤكد."
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order_line.py:0
+msgid "The ordered quantity must be a whole number greater than 0."
+msgstr "يجب أن تكون الكمية المطلوبة عددًا صحيحًا أكبر من 0."
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order_line.py:0
 msgid "The product \"%s\" is already in this order. Change its quantity instead."
 msgstr "المنتج \"%s\" موجود في الطلب. عدّل كميته بدل إضافته مرة ثانية."
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "This action is only available for store orders."
+msgstr "هذا الإجراء متاح لطلبات المتجر فقط."
 
 #. module: store_management
 #. odoo-python
