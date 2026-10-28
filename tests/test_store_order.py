@@ -1,5 +1,6 @@
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase
+from odoo import Command
 
 class TestStoreOrder(TransactionCase):
 
@@ -152,3 +153,94 @@ class TestStoreOrder(TransactionCase):
         with self.assertRaises(UserError):
             wizard.action_restock()
         self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_store_confirm_rejects_regular_order(self):
+        order = self.env['sale.order'].create({
+            'partner_id': self.customer.id,
+            'order_line': [Command.create({
+                'product_id': self.product.product_variant_id.id,
+                'product_uom_qty': 2,
+            })],
+        })
+        with self.assertRaises(UserError):
+            order.action_store_confirm()
+        self.assertEqual(order.state, 'draft')
+        self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_store_cancel_rejects_regular_order(self):
+        order = self.env['sale.order'].create({
+            'partner_id': self.customer.id,
+            'order_line': [Command.create({
+                'product_id': self.product.product_variant_id.id,
+                'product_uom_qty': 2,
+            })],
+        })
+        order.action_confirm()
+        with self.assertRaises(UserError):
+            order.action_store_cancel()
+        self.assertEqual(order.state, 'sale')
+        self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_confirmed_line_quantity_cannot_change(self):
+        order = self._create_order(quantity=1)
+        order.action_store_confirm()
+        with self.assertRaises(UserError):
+            order.order_line.write({'product_uom_qty': 100})
+        self.assertEqual(order.order_line.product_uom_qty, 1)
+        self.assertEqual(self.product.store_stock_qty, 9)
+
+    def test_confirmed_order_cannot_get_new_line(self):
+        other_product = self.env['product.template'].create({
+            'name': 'Test Keyboard',
+            'default_code': 'TEST-KEYBOARD',
+            'store_stock_qty': 5,
+        })
+        order = self._create_order(quantity=1)
+        order.action_store_confirm()
+        with self.assertRaises(UserError):
+            self.env['sale.order.line'].create({
+                'order_id': order.id,
+                'product_id': other_product.product_variant_id.id,
+                'product_uom_qty': 1,
+            })
+        self.assertEqual(len(order.order_line), 1)
+
+    def test_confirmed_line_cannot_be_deleted(self):
+        order = self._create_order(quantity=1)
+        order.action_store_confirm()
+        with self.assertRaises(UserError):
+            order.order_line.unlink()
+        self.assertEqual(len(order.order_line), 1)
+
+    def test_fractional_quantity_rejected(self):
+        with self.assertRaises(ValidationError):
+            self._create_order(quantity=0.5)
+        with self.assertRaises(ValidationError):
+            self._create_order(quantity=2.7)
+        self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_standard_confirm_deducts_stock(self):
+        order = self._create_order(quantity=3)
+        order.action_confirm()
+        self.assertEqual(order.state, 'sale')
+        self.assertEqual(self.product.store_stock_qty, 7)
+
+    def test_standard_confirm_checks_stock(self):
+        order = self._create_order(quantity=11)
+        with self.assertRaises(UserError):
+            order.action_confirm()
+        self.assertEqual(order.state, 'draft')
+        self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_standard_cancel_restores_stock(self):
+        order = self._create_order(quantity=3)
+        order.action_store_confirm()
+        order.with_context(disable_cancel_warning=True).action_cancel()
+        self.assertEqual(order.state, 'cancel')
+        self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_store_order_cannot_be_signed_or_paid(self):
+        order = self._create_order(quantity=1)
+        order.require_signature = True
+        self.assertFalse(order._has_to_be_signed())
+        self.assertFalse(order._has_to_be_paid())

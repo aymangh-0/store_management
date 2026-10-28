@@ -1,20 +1,37 @@
 from odoo import _, api, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    STORE_LOCKED_LINE_FIELDS = {
+        'product_id', 'product_uom_qty', 'product_uom_id', 'price_unit', 'discount',
+    }
+
+    def _store_check_not_confirmed(self):
+        if any(line.order_id.is_store_order and line.order_id.state == 'sale' for line in self):
+            raise UserError(_('The lines of a confirmed store order cannot be modified.'))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        lines._store_check_not_confirmed()
+        return lines
+
+    def write(self, vals):
+        if self.STORE_LOCKED_LINE_FIELDS & set(vals):
+            self._store_check_not_confirmed()
+        return super().write(vals)
+
     @api.constrains('product_uom_qty')
     def _check_store_quantity(self):
         for line in self:
-            if (
-                    line.order_id.is_store_order
-                    and not line.display_type
-                    and not line.is_downpayment
-                    and line.product_uom_qty <= 0
-            ):
+            if not line.order_id.is_store_order or line.display_type or line.is_downpayment:
+                continue
+            quantity = line.product_uom_qty
+            if quantity <= 0 or quantity != int(quantity):
                 raise ValidationError(
-                    _('Ordered quantity must be greater than 0.')
+                    _('The ordered quantity must be a whole number greater than 0.')
                 )
 
     @api.onchange('product_id')

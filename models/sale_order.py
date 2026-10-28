@@ -84,7 +84,28 @@ class SaleOrder(models.Model):
                 )
                 product.store_stock_qty += sign * int(line.product_uom_qty)
 
+    def _store_check_is_store_order(self):
+        if self.filtered(lambda order: not order.is_store_order):
+            raise UserError(_('This action is only available for store orders.'))
+
+    def action_confirm(self):
+        store_orders = self.filtered('is_store_order')
+        store_orders._store_check_stock()
+        result = super().action_confirm()
+        store_orders._store_update_stock(-1)
+        store_orders._store_send_confirmation_email()
+        return result
+
+    def _action_cancel(self):
+        confirmed_store_orders = self.filtered(
+            lambda order: order.is_store_order and order.state == 'sale'
+        )
+        result = super()._action_cancel()
+        confirmed_store_orders._store_update_stock(1)
+        return result
+
     def action_store_confirm(self):
+        self._store_check_is_store_order()
         for order in self:
             if order.state == 'cancel':
                 raise UserError(_('A cancelled order cannot be confirmed. Reset it to draft first.'))
@@ -92,11 +113,7 @@ class SaleOrder(models.Model):
                 raise UserError(_('Only draft orders can be confirmed.'))
             if not order.order_line.filtered(lambda line: not line.display_type):
                 raise UserError(_('You cannot confirm an order without products.'))
-        self._store_check_stock()
-        result = self.action_confirm()
-        self._store_update_stock(-1)
-        self._store_send_confirmation_email()
-        return result
+        return self.action_confirm()
 
     def _store_send_confirmation_email(self):
         template = self.env.ref('store_management.mail_template_store_order_confirmed')
@@ -109,15 +126,14 @@ class SaleOrder(models.Model):
                 )
 
     def action_store_cancel(self):
+        self._store_check_is_store_order()
         for order in self:
             if order.state == 'cancel':
                 raise UserError(_('This order is already cancelled'))
-        confirmed_orders = self.filtered(lambda o: o.state == 'sale')
-        result = self.action_cancel()
-        confirmed_orders._store_update_stock(1)
-        return result
+        return self.with_context(disable_cancel_warning=True).action_cancel()
 
     def action_store_reset_draft(self):
+        self._store_check_is_store_order()
         for order in self:
             if order.state != 'cancel':
                 raise UserError(_('Only cancelled orders can be reset to draft'))
@@ -129,3 +145,9 @@ class SaleOrder(models.Model):
             if order.is_store_order and order.state == 'sale' and protected_fields & set(vals):
                 raise UserError(_('A confirmed order cannot be modified.'))
         return super().write(vals)
+
+    def _has_to_be_signed(self):
+        return not self.is_store_order and super()._has_to_be_signed()
+
+    def _has_to_be_paid(self):
+        return not self.is_store_order and super()._has_to_be_paid()
