@@ -1,6 +1,6 @@
 # Store Management — Odoo 19
 
-A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders, with a customer portal for placing orders online.
+A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders, with a customer portal for placing and cancelling orders online.
 
 This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, scheduled actions, email templates, translations, automated tests, portal controllers, and frontend JavaScript.
 
@@ -18,6 +18,7 @@ The module **extends Odoo's existing models** using `_inherit` (extension inheri
 | Stock History | `store.stock.history` *(new)* | Read-only log of every stock change |
 | Cancel Wizard | `store.order.cancel.wizard` *(new, transient)* | Pop-up that asks for the cancellation reason |
 | Restock Wizard | `store.restock.wizard` + `store.restock.wizard.line` *(new, transient)* | Pop-up to add received quantities to several products at once |
+| Store Settings | `store.settings.wizard` *(new, transient)* | Pop-up where the Store Manager sets the daily portal order limit |
 
 The customer portal is built on Odoo's `portal` module: a controller that inherits `CustomerPortal`, QWeb page templates, and one frontend JavaScript interaction.
 
@@ -74,16 +75,19 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
 ### Orders
 - Automatic numbering: `CMD/2026/0001`, `CMD/2026/0002`, …
 - Sales price filled automatically when a product is selected
-- Ordered quantity must be greater than `0`
+- Ordered quantity must be a whole number greater than `0`
 - The same product cannot be added twice to the same order (change its quantity instead)
 - Order total computed automatically from the order lines (without taxes)
 - Workflow buttons: **Confirm**, **Cancel**, **Reset to Draft**, **Print**
 - Status bar: **Draft → Confirmed → Cancelled**
 - Business rules:
   - A confirmed order can no longer be edited (enforced in Python, from any screen)
+  - The lines of a confirmed order cannot be changed, added, or removed, even directly on the line
+  - Store buttons (**Confirm**, **Cancel**, **Reset to Draft**) work on store orders only
   - A cancelled order cannot be confirmed
   - Reset to Draft is only allowed from Cancelled
 - Stock handling:
+  - Built into Odoo's own confirm and cancel methods, so it applies from any route: the store buttons, the Sales app, the cancel pop-ups, or an external integration
   - An order cannot be confirmed if any product's quantity is greater than its available stock
   - Confirming an order deducts the ordered quantities from stock
   - Cancelling a confirmed order returns the quantities to stock (cancelling a draft order does not change stock)
@@ -91,6 +95,7 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
   - **Cancel** opens a pop-up with ready-made reasons: **Customer request**, **Wrong order details**, **Payment issue**, or **Other** (requires a written reason)
   - The reason is saved on the order, shown on the form, and posted in the chatter
   - Optional **Cancellation Reason** column in the orders list (hidden by default)
+- Store orders cannot be signed or paid online, so a customer can never confirm one from the standard sales portal page
 - Customer selection limited to store customers
 - Search by order number, customer, and product
 - Filters by status and order date, grouping by customer, status, and date
@@ -136,11 +141,22 @@ Store customers with portal access can log in to the website and manage their ow
 | Order | `/my/store/orders/<id>` | Order date, status, cancellation reason (if any), ordered products, total, and **Download PDF** |
 | New Order | `/my/store/orders/new` | Products in stock with price and available quantity, and a quantity field for each |
 
+Order flow:
+
+| Step | Who | Result |
+|---|---|---|
+| Place an order | Customer, on the portal | A **draft** store order. Stock is checked but not deducted |
+| Confirm | Store User or Store Manager, in the back office | Stock is deducted, the history is logged, and the confirmation email is sent |
+| Cancel a draft | Customer, with **Cancel Order** on the order page | The order is cancelled with the reason *Cancelled by the customer from the portal.*, posted in the chatter |
+| Cancel | Store User or Store Manager, with the cancel wizard | Draft or confirmed; a confirmed order returns its stock |
+
 - Breadcrumbs on every page: **Home / Store Orders / …**
 - **Live total**: the order total updates while the customer types, with thousands separators and the currency
 - A quantity above the available stock turns the field red immediately, and the browser blocks submitting it
-- Placing an order creates a store order and **confirms it directly**: the stock is deducted, the history is logged, and the confirmation email is sent
-- If the order fails (for example not enough stock), nothing is saved and the page shows the error
+- Placing an order creates a **draft** store order; the stock is checked again when staff confirm it, because a draft does not reserve stock
+- A customer can only cancel their own **draft** orders; confirmed orders are cancelled by staff
+- **Daily limit**: a customer can place up to `5` orders in 24 hours (cancelled orders count too; orders created by staff for the customer do not)
+- If the order fails (not enough stock, or the daily limit is reached), nothing is saved and the page shows the error
 
 Protection is applied on the server, not only in the page:
 
@@ -148,21 +164,33 @@ Protection is applied on the server, not only in the page:
 |---|---|---|
 | Red field and live total | JavaScript in the browser | Guidance while typing only |
 | Maximum quantity on the field | Browser | Stops the form from being submitted |
-| Login required, own orders only, stock check | Python controller and model | The real protection |
+| Login required, own orders only, stock check, draft-only cancel, daily limit | Python controller and model | The real protection |
 
 - Every page requires login; a customer only ever sees their own store orders (another customer's order number redirects silently to the list)
 - Products and orders are read with system rights, always filtered by the logged-in customer
-- Order creation and confirmation run inside a savepoint, so a failed confirmation leaves no half-created order
+- Order creation and the stock check run inside a savepoint, so a rejected order leaves nothing behind
+- Placing and cancelling orders accept form submissions only (`POST`)
 - Forms include Odoo's CSRF token
 
 To give a customer access: open the contact, then **Action → Grant portal access** (the contact needs an email, which becomes the login).
+
+### Store Settings
+**Configuration → Store Settings** *(Store Manager only)* opens a pop-up with one setting:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| **Portal Orders per Customer in 24 Hours** | `5` | Maximum portal orders per customer in the last 24 hours; `0` means no limit |
+
+- The value is stored as the system parameter `store_management.daily_order_limit` and is kept on module upgrades
+- The Store Manager has no access to system parameters: the pop-up reads and writes this one key only, with system rights
+- If the parameter is missing or invalid, the default `5` is used
 
 ### Security
 
 | Group | Access |
 |---|---|
 | **Store User** | Views and creates store orders (sees own orders only), confirms and cancels them. Read-only access to products, categories, and customers. Cannot delete orders. |
-| **Store Manager** | Full access to products, customers, and orders (sees all orders), restock, low stock alerts, read-only stock history, and the **Configuration** menu. |
+| **Store Manager** | Full access to products, customers, and orders (sees all orders), restock, low stock alerts, read-only stock history, store settings, and the **Configuration** menu. |
 
 - Store Manager includes all Store User rights.
 - Both groups include the matching Sales groups (**Own Documents** for Store User, **All Documents** for Store Manager), because store orders are built on `sale.order`.
@@ -171,11 +199,14 @@ To give a customer access: open the contact, then **Action → Grant portal acce
 
 ## Tests
 
-Automated tests in `tests/test_store_order.py` (14 tests) cover the main business rules:
+Automated tests in `tests/test_store_order.py` (24 tests) cover the main business rules:
 
 | Area | What is tested |
 |---|---|
-| Order rules | Duplicate products are rejected; confirming more than the stock is rejected and nothing changes; a confirmed order cannot be modified |
+| Order rules | Duplicate products are rejected; confirming more than the stock is rejected and nothing changes; a confirmed order cannot be modified; fractional quantities are rejected |
+| Confirmed lines | A line quantity cannot be changed, a line cannot be added or deleted |
+| Regular orders | Store confirm and cancel reject a regular sales order and leave the stock unchanged |
+| Standard routes | Odoo's own confirm checks and deducts the stock, and its cancel restores it; store orders cannot be signed or paid |
 | Stock | Confirming deducts the stock; cancelling a confirmed order restores it; cancelling a draft does not change it |
 | Stock history | Initial stock, order confirmation, and manual changes are logged with the right type, quantity, stock after, and order |
 | Low stock | The limit is exactly `5` (`6` is not low, `5` is) |
@@ -188,7 +219,7 @@ Each test runs in a transaction that is rolled back, so the database is never ch
 python odoo-bin -c odoo.conf -d <database> -u store_management --test-enable --test-tags /store_management --stop-after-init --no-http
 ```
 
-The last result line should read `0 failed, 0 error(s) of 14 tests`.
+The last result line should read `0 failed, 0 error(s) of 24 tests`.
 
 ## Module Structure
 
@@ -212,6 +243,7 @@ store_management/
 ├── data/
 │   ├── sequence.xml
 │   ├── cron.xml
+│   ├── config_parameter.xml
 │   └── mail_template.xml
 ├── models/
 │   ├── __init__.py
@@ -225,7 +257,9 @@ store_management/
 │   ├── store_order_cancel_wizard.py
 │   ├── store_order_cancel_wizard_views.xml
 │   ├── store_restock_wizard.py
-│   └── store_restock_wizard_views.xml
+│   ├── store_restock_wizard_views.xml
+│   ├── store_settings_wizard.py
+│   └── store_settings_wizard_views.xml
 ├── tests/
 │   ├── __init__.py
 │   └── test_store_order.py
@@ -277,11 +311,28 @@ The **Store Management** app adds the following menus:
 - **Customers** — manage store customers and view their orders
 - **Orders** — create, confirm, cancel, print, and analyze store orders
 - **Configuration** *(Store Manager only)*
+  - **Store Settings** — set the daily portal order limit
   - **Order Sequence** — edit the `CMD/` numbering
   - **Store Team** — view users in the store groups
   - **Stock History** — view all stock movements
 
-Store customers use the portal from the website: **My Account → Store Orders**.
+Store customers use the portal from the website: **My Account → Store Orders**. Their orders arrive as drafts in **Orders**, to be confirmed by staff.
+
+## Known Limitations
+
+These are deliberate simplifications for a training project:
+
+| Topic | Current behavior |
+|---|---|
+| Taxes | The store total excludes taxes, while Odoo's own total includes them |
+| Price lists | The sales price is filled directly from the product, so price lists are not applied in the back office |
+| Units of measure | Quantities are counted in the product's unit; other units (e.g. dozens) are not converted |
+| Variants | Stock is kept on the product template, shared by all its variants |
+| Confirming several orders at once | Each line is checked against the current stock, so confirming several orders in one call could exceed it |
+| Locked orders setting | If Sales is set to lock confirmed orders, cancelling a confirmed store order is blocked by Odoo |
+| Unique reference | Applies to all products in the database, not only store products |
+| Daily limit | Counted before the order is created, so two orders at the exact same moment could both pass |
+| Multi-company | The portal lists products without a company filter |
 
 ## Roadmap
 
@@ -306,6 +357,10 @@ Store customers use the portal from the website: **My Account → Store Orders**
 - [x] Automated tests
 - [x] Customer portal: order list, order details, PDF download, and new orders
 - [x] Live order total in the portal (frontend JavaScript)
+- [x] Portal orders arrive as drafts and are confirmed by staff
+- [x] Customers can cancel their draft orders from the portal
+- [x] Daily portal order limit per customer, set by the Store Manager
+- [x] Code review fixes: stock in Odoo's own confirm and cancel, locked confirmed lines, whole quantities, no online signing or payment
 
 ## License
 
