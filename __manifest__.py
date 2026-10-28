@@ -12,6 +12,7 @@
         'security/ir.model.access.csv',
         'data/sequence.xml',
         'data/cron.xml',
+        'data/config_parameter.xml',
         'report/order_report_templates.xml',
         'report/order_report.xml',
         'data/mail_template.xml',

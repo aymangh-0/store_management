@@ -46,6 +46,11 @@
         <t t-call="portal.portal_layout">
             <div class="d-flex flex-wrap align-items-center gap-3 mt-4 mb-3">
                 <h3 class="mb-0"><span t-field="order.name"/></h3>
+                <form t-if="order.state == 'draft'"
+                      t-attf-action="/my/store/orders/#{order.id}/cancel" method="post" class="d-inline">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Cancel Order</button>
+                </form>
                 <span t-field="order.store_state"
                       t-attf-class="badge rounded-pill #{
                           'text-bg-success' if order.store_state == 'confirmed'
@@ -182,11 +187,5 @@
                 <t t-set="config_card" t-value="True"/>
             </t>
         </div>
-    </template>
-
-    <template id="portal_my_home_hide_sale_orders" name="Hide Sales Orders in Portal Home"
-              inherit_id="portal.portal_my_home" priority="100">
-        <xpath expr="//t[@t-call='portal.portal_docs_entry'][t[contains(@t-value, '/my/orders')]]"
-               position="replace"/>
     </template>
 </odoo>

@@ -1,7 +1,12 @@
-from odoo import Command, _, http
+from datetime import timedelta
+
+from odoo import Command, _, fields, http
 from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
+
+STORE_DAILY_LIMIT_PARAM = 'store_management.daily_order_limit'
+STORE_DEFAULT_DAILY_LIMIT = 5
 
 
 class StorePortal(CustomerPortal):
@@ -71,6 +76,29 @@ class StorePortal(CustomerPortal):
     def portal_store_new_order(self, **kw):
         return self._store_render_new_order()
 
+    def _store_daily_limit(self):
+        value = request.env['ir.config_parameter'].sudo().get_param(STORE_DAILY_LIMIT_PARAM)
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return STORE_DEFAULT_DAILY_LIMIT
+
+    def _store_check_daily_limit(self):
+        limit = self._store_daily_limit()
+        if limit <= 0:
+            return
+        since = fields.Datetime.now() - timedelta(days=1)
+        count = request.env['sale.order'].sudo().search_count([
+            ('is_store_order', '=', True),
+            ('create_uid', '=', request.env.uid),
+            ('create_date', '>=', since),
+        ])
+        if count >= limit:
+            raise UserError(_(
+                'You can place up to %s orders in 24 hours. Please try again later.',
+                limit,
+            ))
+
     @http.route('/my/store/orders/submit', type='http', auth='user',
                 website=True, methods=['POST'])
     def portal_store_submit_order(self, **post):
@@ -92,14 +120,27 @@ class StorePortal(CustomerPortal):
             )
 
         try:
+            self._store_check_daily_limit()
             with request.env.cr.savepoint():
                 order = request.env['sale.order'].sudo().create({
                     'partner_id': request.env.user.partner_id.id,
                     'is_store_order': True,
                     'order_line': lines,
                 })
-                order.action_store_confirm()
+                order._store_check_stock()
         except UserError as error:
             return self._store_render_new_order(error.args[0])
 
+        return request.redirect('/my/store/orders/%s' % order.id)
+
+    @http.route('/my/store/orders/<int:order_id>/cancel', type='http', auth='user', website=True, methods=['POST'])
+    def portal_store_cancel_order(self, order_id, **post):
+        order = self._store_get_order(order_id)
+        if not order:
+            return request.redirect('/my/store/orders')
+        if order.state == 'draft':
+            order.action_store_cancel()
+            reason = _('Cancelled by the customer from the portal.')
+            order.store_cancel_reason = reason
+            order.message_post(body=reason)
         return request.redirect('/my/store/orders/%s' % order.id)
