@@ -129,6 +129,7 @@ msgstr "إلغاء"
 
 #. module: store_management
 #: model:ir.actions.act_window,name:store_management.store_order_cancel_wizard_action
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form
 msgid "Cancel Order"
 msgstr "إلغاء الطلب"
@@ -148,6 +149,12 @@ msgstr "سبب الإلغاء:"
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
 msgid "Cancelled"
 msgstr "ملغي"
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/controllers/portal.py:0
+msgid "Cancelled by the customer from the portal."
+msgstr "ألغاه العميل من البوابة."
 
 #. module: store_management
 #: model:ir.ui.menu,name:store_management.store_menu_categories
@@ -204,6 +211,7 @@ msgstr "أنشئ أول منتج للمتجر"
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__create_uid
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__create_uid
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__create_uid
+#: model:ir.model.fields,field_description:store_management.field_store_settings_wizard__create_uid
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__create_uid
 msgid "Created by"
 msgstr "أنشئ بواسطة"
@@ -212,6 +220,7 @@ msgstr "أنشئ بواسطة"
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__create_date
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__create_date
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__create_date
+#: model:ir.model.fields,field_description:store_management.field_store_settings_wizard__create_date
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__create_date
 msgid "Created on"
 msgstr "أنشئ في"
@@ -255,6 +264,7 @@ msgstr "التفاصيل"
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form
 #: model_terms:ir.ui.view,arch_db:store_management.store_restock_wizard_form
+#: model_terms:ir.ui.view,arch_db:store_management.store_settings_wizard_form
 msgid "Discard"
 msgstr "تجاهل"
 
@@ -266,6 +276,7 @@ msgstr "تجاهل"
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__display_name
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__display_name
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__display_name
+#: model:ir.model.fields,field_description:store_management.field_store_settings_wizard__display_name
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__display_name
 msgid "Display Name"
 msgstr "الاسم المعروض"
@@ -311,6 +322,7 @@ msgstr "الإجمالي"
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__id
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__id
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__id
+#: model:ir.model.fields,field_description:store_management.field_store_settings_wizard__id
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__id
 msgid "ID"
 msgstr "المعرف"
@@ -325,6 +337,7 @@ msgstr "رصيد افتتاحي"
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__write_uid
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__write_uid
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__write_uid
+#: model:ir.model.fields,field_description:store_management.field_store_settings_wizard__write_uid
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__write_uid
 msgid "Last Updated by"
 msgstr "آخر تحديث بواسطة"
@@ -333,6 +346,7 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__write_date
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__write_date
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard_line__write_date
+#: model:ir.model.fields,field_description:store_management.field_store_settings_wizard__write_date
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__write_date
 msgid "Last Updated on"
 msgstr "آخر تحديث في"
@@ -508,6 +522,11 @@ msgid "Please write the cancellation reason."
 msgstr "يرجى كتابة سبب الإلغاء."
 
 #. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_store_settings_wizard__daily_order_limit
+msgid "Portal Orders per Customer in 24 Hours"
+msgstr "طلبات البوابة لكل عميل خلال 24 ساعة"
+
+#. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
 msgid "Price"
 msgstr "السعر"
@@ -614,6 +633,16 @@ msgid "Sales Price cannot be negative."
 msgstr "لا يمكن أن يكون سعر البيع سالبًا."
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_settings_wizard_form
+msgid "Save"
+msgstr "حفظ"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_settings_wizard_form
+msgid "Set 0 for no limit."
+msgstr "اكتب 0 لإلغاء الحد."
+
+#. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
 msgid "Status"
@@ -713,6 +742,18 @@ msgid "Store Sales"
 msgstr "مبيعات المتجر"
 
 #. module: store_management
+#: model:ir.actions.act_window,name:store_management.store_settings_wizard_action
+#: model:ir.ui.menu,name:store_management.store_menu_config_settings
+#: model_terms:ir.ui.view,arch_db:store_management.store_settings_wizard_form
+msgid "Store Settings"
+msgstr "إعدادات المتجر"
+
+#. module: store_management
+#: model:ir.model,name:store_management.model_store_settings_wizard
+msgid "Store Settings Wizard"
+msgstr "نافذة إعدادات المتجر"
+
+#. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_sale_order__store_state
 msgid "Store Status"
 msgstr "الحالة"
@@ -753,6 +794,12 @@ msgstr "المتجر: تأكيد الطلب"
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
 msgid "Subtotal"
 msgstr "المجموع الفرعي"
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/wizard/store_settings_wizard.py:0
+msgid "The daily order limit cannot be negative."
+msgstr "لا يمكن أن يكون الحد اليومي للطلبات بالسالب."
 
 #. module: store_management
 #. odoo-python
@@ -820,6 +867,12 @@ msgstr "النافذة"
 #: model:ir.model.fields.selection,name:store_management.selection__store_order_cancel_wizard__reason_type__wrong_order
 msgid "Wrong order details"
 msgstr "بيانات الطلب غير صحيحة"
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/controllers/portal.py:0
+msgid "You can place up to %s orders in 24 hours. Please try again later."
+msgstr "يمكنك إرسال %s طلبات كحد أقصى خلال 24 ساعة. يرجى المحاولة لاحقًا."
 
 #. module: store_management
 #. odoo-python
