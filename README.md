@@ -1,6 +1,6 @@
 # Store Management — Odoo 19
 
-A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders, with a customer portal for placing and cancelling orders online.
+A custom Odoo 19 module for managing a small retail store: products, stock, customers, and sales orders, with a customer portal for placing, paying for, and cancelling orders online.
 
 This is a training project built to practice the core concepts of Odoo development: models, fields, views, menus, actions, relationships, computed fields, business rules, workflows, security, QWeb reports, wizards, scheduled actions, email templates, translations, automated tests, portal controllers, and frontend JavaScript.
 
@@ -78,7 +78,7 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
 - Ordered quantity must be a whole number greater than `0`
 - The same product cannot be added twice to the same order (change its quantity instead)
 - Order total computed automatically from the order lines (without taxes)
-- Workflow buttons: **Confirm**, **Cancel**, **Reset to Draft**, **Print**
+- Workflow buttons: **Register Payment**, **Confirm**, **Cancel**, **Reset to Draft**, **Print**
 - Status bar: **Draft → Confirmed → Cancelled**
 - Business rules:
   - A confirmed order can no longer be edited (enforced in Python, from any screen)
@@ -91,6 +91,13 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
   - An order cannot be confirmed if any product's quantity is greater than its available stock
   - Confirming an order deducts the ordered quantities from stock
   - Cancelling a confirmed order returns the quantities to stock (cancelling a draft order does not change stock)
+- Payment *(test payment, no real money)*:
+  - **Payment Status** on every order: **Not Paid**, **Paid**, or **Refunded**, shown as a colored badge in the form, the list, and the portal
+  - An order must be **paid before it can be confirmed**, from any route (store buttons, Sales app, or integration)
+  - Customers pay on the portal when they place an order; staff use **Register Payment** for payments received in the store (e.g. orders created in the back office)
+  - Cancelling a paid order marks it **Refunded** automatically, from any cancel route
+  - Resetting a refunded order to draft sets it back to **Not Paid**, so it must be paid again
+  - Every payment and refund is posted in the chatter with the amount and the user
 - Cancellation reason:
   - **Cancel** opens a pop-up with ready-made reasons: **Customer request**, **Wrong order details**, **Payment issue**, or **Other** (requires a written reason)
   - The reason is saved on the order, shown on the form, and posted in the chatter
@@ -98,7 +105,7 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
 - Store orders cannot be signed or paid online, so a customer can never confirm one from the standard sales portal page
 - Customer selection limited to store customers
 - Search by order number, customer, and product
-- Filters by status and order date, grouping by customer, status, and date
+- Filters by status, payment status (**Not Paid**, **Paid**, **Refunded**), and order date, grouping by customer, status, and date
 
 ### Sales Analysis
 - **Graph** view: store sales per month (bar chart, can be switched to line or pie)
@@ -140,21 +147,25 @@ Store customers with portal access can log in to the website and manage their ow
 | Store Orders | `/my/store/orders` | The customer's store orders with number, date, total, and colored status, plus a **New Order** button |
 | Order | `/my/store/orders/<id>` | Order date, status, cancellation reason (if any), ordered products, total, and **Download PDF** |
 | New Order | `/my/store/orders/new` | Products in stock with price and available quantity, and a quantity field for each |
+| Payment | `/my/store/orders/<id>/pay` | Test payment page: order number, amount, **Pay Now** and **Pay Later** (unpaid drafts only) |
 
 Order flow:
 
 | Step | Who | Result |
 |---|---|---|
-| Place an order | Customer, on the portal | A **draft** store order. Stock is checked but not deducted |
-| Confirm | Store User or Store Manager, in the back office | Stock is deducted, the history is logged, and the confirmation email is sent |
-| Cancel a draft | Customer, with **Cancel Order** on the order page | The order is cancelled with the reason *Cancelled by the customer from the portal.*, posted in the chatter |
-| Cancel | Store User or Store Manager, with the cancel wizard | Draft or confirmed; a confirmed order returns its stock |
+| Place an order | Customer, on the portal | A **draft**, **Not Paid** store order. Stock is checked but not deducted. The customer is taken to the payment page |
+| Pay | Customer, with **Pay Now** (right away, or later from the order page) | The order is **Paid** |
+| Confirm | Store User or Store Manager, in the back office | Paid orders only. Stock is deducted, the history is logged, and the confirmation email is sent |
+| Cancel a draft | Customer, with **Cancel Order** on the order page | The order is cancelled with the reason *Cancelled by the customer from the portal.*; a paid order is **Refunded** |
+| Cancel | Store User or Store Manager, with the cancel wizard | Draft or confirmed; a confirmed order returns its stock, and a paid order is **Refunded** |
 
 - Breadcrumbs on every page: **Home / Store Orders / …**
 - **Live total**: the order total updates while the customer types, with thousands separators and the currency
 - A quantity above the available stock turns the field red immediately, and the browser blocks submitting it
 - Placing an order creates a **draft** store order; the stock is checked again when staff confirm it, because a draft does not reserve stock
 - A customer can only cancel their own **draft** orders; confirmed orders are cancelled by staff
+- The payment page clearly says it is a test payment; it has no card fields and charges nothing
+- Paying is a form submission (`POST`) to its own URL; opening the payment page of an order that cannot be paid redirects to the order
 - **Daily limit**: a customer can place up to `5` orders in 24 hours (cancelled orders count too; orders created by staff for the customer do not)
 - If the order fails (not enough stock, or the daily limit is reached), nothing is saved and the page shows the error
 
@@ -199,7 +210,7 @@ To give a customer access: open the contact, then **Action → Grant portal acce
 
 ## Tests
 
-Automated tests in `tests/test_store_order.py` (24 tests) cover the main business rules:
+Automated tests in `tests/test_store_order.py` (29 tests) cover the main business rules:
 
 | Area | What is tested |
 |---|---|
@@ -207,6 +218,7 @@ Automated tests in `tests/test_store_order.py` (24 tests) cover the main busines
 | Confirmed lines | A line quantity cannot be changed, a line cannot be added or deleted |
 | Regular orders | Store confirm and cancel reject a regular sales order and leave the stock unchanged |
 | Standard routes | Odoo's own confirm checks and deducts the stock, and its cancel restores it; store orders cannot be signed or paid |
+| Payment | Paying marks the order paid and cannot happen twice; an unpaid order cannot be confirmed from any route; cancelling a paid order refunds it, an unpaid one stays unpaid; a refunded order reset to draft needs payment again |
 | Stock | Confirming deducts the stock; cancelling a confirmed order restores it; cancelling a draft does not change it |
 | Stock history | Initial stock, order confirmation, and manual changes are logged with the right type, quantity, stock after, and order |
 | Low stock | The limit is exactly `5` (`6` is not low, `5` is) |
@@ -219,7 +231,7 @@ Each test runs in a transaction that is rolled back, so the database is never ch
 python odoo-bin -c odoo.conf -d <database> -u store_management --test-enable --test-tags /store_management --stop-after-init --no-http
 ```
 
-The last result line should read `0 failed, 0 error(s) of 24 tests`.
+The last result line should read `0 failed, 0 error(s) of 29 tests`.
 
 ## Module Structure
 
@@ -333,6 +345,8 @@ These are deliberate simplifications for a training project:
 | Unique reference | Applies to all products in the database, not only store products |
 | Daily limit | Counted before the order is created, so two orders at the exact same moment could both pass |
 | Multi-company | The portal lists products without a company filter |
+| Payment | A test payment only: no payment provider, no invoice, and no accounting entries |
+| Orders before the payment feature | Existing orders start as **Not Paid**, including confirmed ones; they can be marked paid once from the Odoo shell |
 
 ## Roadmap
 
@@ -360,6 +374,7 @@ These are deliberate simplifications for a training project:
 - [x] Portal orders arrive as drafts and are confirmed by staff
 - [x] Customers can cancel their draft orders from the portal
 - [x] Daily portal order limit per customer, set by the Store Manager
+- [x] Test payment: customers pay when ordering, staff confirm paid orders only, refunds on cancel
 - [x] Code review fixes: stock in Odoo's own confirm and cancel, locked confirmed lines, whole quantities, no online signing or payment
 
 ## License
