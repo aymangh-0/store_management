@@ -99,13 +99,30 @@ msgstr "لا يمكن تأكيد طلب ملغي. أرجعه إلى مسودة �
 #. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order.py:0
+msgid "A cancelled order cannot be paid."
+msgstr "لا يمكن دفع طلب ملغي."
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
 msgid "A confirmed order cannot be modified."
 msgstr "لا يمكن تعديل طلب مؤكد."
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "A store order must be paid before it can be confirmed."
+msgstr "يجب دفع طلب المتجر قبل تأكيده."
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.product_template_search_view_inherit_store
 msgid "Active"
 msgstr "نشط"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Amount:"
+msgstr "المبلغ:"
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
@@ -394,6 +411,12 @@ msgid "No stock movements yet"
 msgstr "لا توجد حركات مخزون بعد"
 
 #. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_payment_state__not_paid
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Not Paid"
+msgstr "غير مدفوع"
+
+#. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order.py:0
 msgid ""
@@ -475,6 +498,11 @@ msgid "Order cancelled. Reason: %s"
 msgstr "تم إلغاء الطلب. السبب: %s"
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Order:"
+msgstr "الطلب:"
+
+#. module: store_management
 #: model:ir.actions.act_window,name:store_management.store_order_action
 #: model:ir.ui.menu,name:store_management.store_menu_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_list_view
@@ -495,9 +523,49 @@ msgid "Other"
 msgstr "أخرى"
 
 #. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_payment_state__paid
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Paid"
+msgstr "مدفوع"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Pay Later"
+msgstr "الدفع لاحقًا"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Pay Now"
+msgstr "ادفع الآن"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_breadcrumbs_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Payment"
+msgstr "الدفع"
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_sale_order__store_payment_state
+msgid "Payment Status"
+msgstr "حالة الدفع"
+
+#. module: store_management
 #: model:ir.model.fields.selection,name:store_management.selection__store_order_cancel_wizard__reason_type__payment_issue
 msgid "Payment issue"
 msgstr "مشكلة في الدفع"
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "Payment of %s received (test payment)."
+msgstr "تم استلام دفعة بمبلغ %s (دفع تجريبي)."
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "Payment of %s refunded to the customer (test payment)."
+msgstr "تم استرجاع مبلغ %s للعميل (دفع تجريبي)."
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.report_store_order
@@ -590,6 +658,17 @@ msgstr "السبب"
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__note
 msgid "Reference"
 msgstr "المرجع"
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_payment_state__refunded
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Refunded"
+msgstr "مسترجع"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Register Payment"
+msgstr "تسجيل الدفع"
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
@@ -820,10 +899,21 @@ msgid "This action is only available for store orders."
 msgstr "هذا الإجراء متاح لطلبات المتجر فقط."
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "This is a test payment. No money is charged."
+msgstr "هذا دفع تجريبي، ولن يُخصم أي مبلغ."
+
+#. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order.py:0
 msgid "This order is already cancelled"
 msgstr "هذا الطلب ملغي مسبقًا"
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "This order is already paid."
+msgstr "هذا الطلب مدفوع مسبقًا."
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order

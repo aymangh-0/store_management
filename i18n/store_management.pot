@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-28 13:15+0000\n"
-"PO-Revision-Date: 2026-10-28 13:15+0000\n"
+"POT-Creation-Date: 2026-10-29 11:44+0000\n"
+"PO-Revision-Date: 2026-10-29 11:44+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -76,12 +76,29 @@ msgstr ""
 #. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order.py:0
+msgid "A cancelled order cannot be paid."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
 msgid "A confirmed order cannot be modified."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "A store order must be paid before it can be confirmed."
 msgstr ""
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.product_template_search_view_inherit_store
 msgid "Active"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Amount:"
 msgstr ""
 
 #. module: store_management
@@ -371,6 +388,12 @@ msgid "No stock movements yet"
 msgstr ""
 
 #. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_payment_state__not_paid
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Not Paid"
+msgstr ""
+
+#. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order.py:0
 msgid ""
@@ -450,6 +473,11 @@ msgid "Order cancelled. Reason: %s"
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Order:"
+msgstr ""
+
+#. module: store_management
 #: model:ir.actions.act_window,name:store_management.store_order_action
 #: model:ir.ui.menu,name:store_management.store_menu_orders
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_list_view
@@ -470,8 +498,48 @@ msgid "Other"
 msgstr ""
 
 #. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_payment_state__paid
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Paid"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Pay Later"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Pay Now"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_breadcrumbs_store
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "Payment"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields,field_description:store_management.field_sale_order__store_payment_state
+msgid "Payment Status"
+msgstr ""
+
+#. module: store_management
 #: model:ir.model.fields.selection,name:store_management.selection__store_order_cancel_wizard__reason_type__payment_issue
 msgid "Payment issue"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "Payment of %s received (test payment)."
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "Payment of %s refunded to the customer (test payment)."
 msgstr ""
 
 #. module: store_management
@@ -564,6 +632,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:store_management.field_store_restock_wizard__reference
 #: model:ir.model.fields,field_description:store_management.field_store_stock_history__note
 msgid "Reference"
+msgstr ""
+
+#. module: store_management
+#: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_payment_state__refunded
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_search_view
+msgid "Refunded"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
+msgid "Register Payment"
 msgstr ""
 
 #. module: store_management
@@ -795,9 +874,20 @@ msgid "This action is only available for store orders."
 msgstr ""
 
 #. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_store_pay
+msgid "This is a test payment. No money is charged."
+msgstr ""
+
+#. module: store_management
 #. odoo-python
 #: code:addons/store_management/models/sale_order.py:0
 msgid "This order is already cancelled"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "This order is already paid."
 msgstr ""
 
 #. module: store_management
