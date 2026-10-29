@@ -17,6 +17,10 @@
                        decoration-info="store_state == 'draft'"
                        decoration-success="store_state == 'confirmed'"
                        decoration-danger="store_state == 'cancel'"/>
+                <field name="store_payment_state" widget="badge"
+                       decoration-success="store_payment_state == 'paid'"
+                       decoration-warning="store_payment_state == 'not_paid'"
+                       decoration-info="store_payment_state == 'refunded'"/>
                 <field name="store_cancel_reason" optional="hide"/>
             </list>
         </field>
@@ -29,6 +33,9 @@
         <field name="arch" type="xml">
             <form string="Store Order">
                 <header>
+                    <button name="action_store_register_payment" string="Register Payment" type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft' or store_payment_state != 'not_paid'"/>
                     <button name="action_store_confirm" type="object"
                             string="Confirm" class="btn-primary"
                             invisible="state != 'draft'"/>
@@ -104,6 +111,10 @@
                         domain="[('store_state', '=', 'confirmed')]"/>
                 <filter string="Cancelled" name="filter_cancelled"
                         domain="[('store_state', '=', 'cancel')]"/>
+                <separator/>
+                <filter name="not_paid" string="Not Paid" domain="[('store_payment_state', '=', 'not_paid')]"/>
+                <filter name="paid" string="Paid" domain="[('store_payment_state', '=', 'paid')]"/>
+                <filter name="refunded" string="Refunded" domain="[('store_payment_state', '=', 'refunded')]"/>
                 <separator/>
                 <filter string="Order Date" name="filter_date_order"
                         date="date_order"/>

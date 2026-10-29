@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import format_amount
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -29,6 +30,18 @@ class SaleOrder(models.Model):
 
     store_cancel_reason = fields.Text(
         string="Cancellation Reason", readonly=True, copy=False
+    )
+
+    store_payment_state = fields.Selection(
+        selection=[
+            ('not_paid', 'Not Paid'),
+            ('paid', 'Paid'),
+            ('refunded', 'Refunded'),
+        ],
+        string='Payment Status',
+        default='not_paid',
+        readonly=True,
+        copy=False,
     )
 
     @api.model_create_multi
@@ -88,8 +101,35 @@ class SaleOrder(models.Model):
         if self.filtered(lambda order: not order.is_store_order):
             raise UserError(_('This action is only available for store orders.'))
 
+    def _store_register_payment(self):
+        self._store_check_is_store_order()
+        for order in self:
+            if order.state == 'cancel':
+                raise UserError(_('A cancelled order cannot be paid.'))
+            if order.store_payment_state == 'paid':
+                raise UserError(_('This order is already paid.'))
+        for order in self:
+            order.store_payment_state = 'paid'
+            order.message_post(body=_(
+                'Payment of %s received (test payment).',
+                format_amount(self.env, order.store_total, order.currency_id),
+            ))
+
+    def _store_refund_payment(self):
+        for order in self:
+            order.store_payment_state = 'refunded'
+            order.message_post(body=_(
+                'Payment of %s refunded to the customer (test payment).',
+                format_amount(self.env, order.store_total, order.currency_id),
+            ))
+
+    def action_store_register_payment(self):
+        self._store_register_payment()
+
     def action_confirm(self):
         store_orders = self.filtered('is_store_order')
+        if store_orders.filtered(lambda order: order.store_payment_state != 'paid'):
+            raise UserError(_('A store order must be paid before it can be confirmed.'))
         store_orders._store_check_stock()
         result = super().action_confirm()
         store_orders._store_update_stock(-1)
@@ -100,8 +140,12 @@ class SaleOrder(models.Model):
         confirmed_store_orders = self.filtered(
             lambda order: order.is_store_order and order.state == 'sale'
         )
+        paid_store_orders = self.filtered(
+            lambda order: order.is_store_order and order.store_payment_state == 'paid'
+        )
         result = super()._action_cancel()
         confirmed_store_orders._store_update_stock(1)
+        paid_store_orders._store_refund_payment()
         return result
 
     def action_store_confirm(self):
@@ -137,7 +181,11 @@ class SaleOrder(models.Model):
         for order in self:
             if order.state != 'cancel':
                 raise UserError(_('Only cancelled orders can be reset to draft'))
-        return self.action_draft()
+        result = self.action_draft()
+        self.filtered(lambda order: order.store_payment_state == 'refunded').write({
+            'store_payment_state': 'not_paid',
+        })
+        return result
 
     def write(self, vals):
         protected_fields = {'partner_id', 'date_order', 'order_line'}

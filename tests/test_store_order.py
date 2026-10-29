@@ -18,8 +18,8 @@ class TestStoreOrder(TransactionCase):
             'store_stock_qty': 10,
         })
 
-    def _create_order(self, quantity):
-        return self.env['sale.order'].create({
+    def _create_order(self, quantity, paid=True):
+        order = self.env['sale.order'].create({
             'partner_id': self.customer.id,
             'is_store_order': True,
             'order_line': [(0, 0, {
@@ -27,6 +27,9 @@ class TestStoreOrder(TransactionCase):
                 'product_uom_qty': quantity,
             })],
         })
+        if paid:
+            order._store_register_payment()
+        return order
 
     def _history(self, move_type):
         return self.env['store.stock.history'].search([
@@ -244,3 +247,37 @@ class TestStoreOrder(TransactionCase):
         order.require_signature = True
         self.assertFalse(order._has_to_be_signed())
         self.assertFalse(order._has_to_be_paid())
+
+    def test_payment_marks_order_paid(self):
+        order = self._create_order(quantity=1,paid=False)
+        order._store_register_payment()
+        self.assertEqual(order.store_payment_state, 'paid')
+        with self.assertRaises(UserError):
+            order._store_register_payment()
+
+    def test_cancel_paid_order_refunds(self):
+        order = self._create_order(quantity=1,paid=False)
+        order._store_register_payment()
+        order.action_store_cancel()
+        self.assertEqual(order.store_payment_state, 'refunded')
+
+    def test_cancel_unpaid_order_stays_not_paid(self):
+        order = self._create_order(quantity=1,paid=False)
+        order.action_store_cancel()
+        self.assertEqual(order.store_payment_state, 'not_paid')
+
+    def test_reset_refunded_order_needs_payment_again(self):
+        order = self._create_order(quantity=1,paid=False)
+        order._store_register_payment()
+        order.action_store_cancel()
+        order.action_store_reset_draft()
+        self.assertEqual(order.store_payment_state, 'not_paid')
+
+    def test_unpaid_order_cannot_be_confirmed(self):
+        order = self._create_order(quantity=1, paid=False)
+        with self.assertRaises(UserError):
+            order.action_store_confirm()
+        with self.assertRaises(UserError):
+            order.action_confirm()
+        self.assertEqual(order.state, 'draft')
+        self.assertEqual(self.product.store_stock_qty, 10)

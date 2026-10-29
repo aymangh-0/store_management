@@ -131,7 +131,7 @@ class StorePortal(CustomerPortal):
         except UserError as error:
             return self._store_render_new_order(error.args[0])
 
-        return request.redirect('/my/store/orders/%s' % order.id)
+        return request.redirect('/my/store/orders/%s/pay' % order.id)
 
     @http.route('/my/store/orders/<int:order_id>/cancel', type='http', auth='user', website=True, methods=['POST'])
     def portal_store_cancel_order(self, order_id, **post):
@@ -143,4 +143,31 @@ class StorePortal(CustomerPortal):
             reason = _('Cancelled by the customer from the portal.')
             order.store_cancel_reason = reason
             order.message_post(body=reason)
+        return request.redirect('/my/store/orders/%s' % order.id)
+
+    def _store_can_pay(self, order):
+        return order.state == 'draft' and order.store_payment_state == 'not_paid'
+
+    @http.route('/my/store/orders/<int:order_id>/pay', type='http', auth='user', website=True)
+    def portal_store_pay_page(self, order_id, **kw):
+        order = self._store_get_order(order_id)
+        if not order:
+            return request.redirect('/my/store/orders')
+        if not self._store_can_pay(order):
+            return request.redirect('/my/store/orders/%s' % order.id)
+        values = self._prepare_portal_layout_values()
+        values.update({
+            'order': order,
+            'page_name': 'store_pay',
+        })
+        return request.render('store_management.portal_store_pay', values)
+
+    @http.route('/my/store/orders/<int:order_id>/pay/confirm', type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_store_pay_confirm(self, order_id, **post):
+        order = self._store_get_order(order_id)
+        if not order:
+            return request.redirect('/my/store/orders')
+        if self._store_can_pay(order):
+            order._store_register_payment()
         return request.redirect('/my/store/orders/%s' % order.id)

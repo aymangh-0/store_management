@@ -44,18 +44,26 @@
 
     <template id="portal_my_store_order" name="My Store Order">
         <t t-call="portal.portal_layout">
-            <div class="d-flex flex-wrap align-items-center gap-3 mt-4 mb-3">
-                <h3 class="mb-0"><span t-field="order.name"/></h3>
+        <div class="d-flex flex-wrap align-items-center gap-3 mt-4 mb-3">
+            <h3 class="mb-0"><span t-field="order.name"/></h3>
+            <span t-field="order.store_state"
+                  t-attf-class="badge rounded-pill #{
+                      'text-bg-success' if order.store_state == 'confirmed'
+                      else 'text-bg-danger' if order.store_state == 'cancel'
+                      else 'text-bg-info'}"/>
+                <span t-field="order.store_payment_state"
+                      t-attf-class="badge rounded-pill #{
+                          'text-bg-success' if order.store_payment_state == 'paid'
+                          else 'text-bg-info' if order.store_payment_state == 'refunded'
+                          else 'text-bg-warning'}"/>
+                <a t-if="order.state == 'draft' and order.store_payment_state == 'not_paid'"
+                   t-attf-href="/my/store/orders/#{order.id}/pay"
+                   class="btn btn-primary btn-sm">Pay Now</a>
                 <form t-if="order.state == 'draft'"
                       t-attf-action="/my/store/orders/#{order.id}/cancel" method="post" class="d-inline">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <button type="submit" class="btn btn-outline-danger btn-sm">Cancel Order</button>
                 </form>
-                <span t-field="order.store_state"
-                      t-attf-class="badge rounded-pill #{
-                          'text-bg-success' if order.store_state == 'confirmed'
-                          else 'text-bg-danger' if order.store_state == 'cancel'
-                          else 'text-bg-info'}"/>
                 <a class="btn btn-secondary btn-sm ms-auto"
                    t-attf-href="/my/store/orders/#{order.id}/pdf">Download PDF</a>
             </div>
@@ -170,6 +178,13 @@
             <li t-if="page_name == 'store_new_order'" class="breadcrumb-item active">
                 New Order
             </li>
+            <li t-if="page_name == 'store_pay'" class="breadcrumb-item">
+                <a href="/my/store/orders">Store Orders</a>
+            </li>
+            <li t-if="page_name == 'store_pay'" class="breadcrumb-item">
+                <a t-attf-href="/my/store/orders/#{order.id}" t-out="order.name"/>
+            </li>
+            <li t-if="page_name == 'store_pay'" class="breadcrumb-item active">Payment</li>
         </xpath>
     </template>
 
@@ -187,5 +202,28 @@
                 <t t-set="config_card" t-value="True"/>
             </t>
         </div>
+    </template>
+
+    <template id="portal_store_pay" name="Store Order Payment">
+        <t t-call="portal.portal_layout">
+            <h3 class="mt-4 mb-3">Payment</h3>
+            <div class="alert alert-warning">
+                This is a test payment. No money is charged.
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="mb-1">Order: <strong t-out="order.name"/></p>
+                    <p class="mb-0 fs-5">Amount:
+                        <strong t-field="order.store_total"
+                                t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                    </p>
+                </div>
+            </div>
+            <form t-attf-action="/my/store/orders/#{order.id}/pay/confirm" method="post" class="d-inline">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <button type="submit" class="btn btn-primary">Pay Now</button>
+            </form>
+            <a t-attf-href="/my/store/orders/#{order.id}" class="btn btn-secondary">Pay Later</a>
+        </t>
     </template>
 </odoo>
