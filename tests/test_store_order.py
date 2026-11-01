@@ -281,3 +281,11 @@ class TestStoreOrder(TransactionCase):
             order.action_confirm()
         self.assertEqual(order.state, 'draft')
         self.assertEqual(self.product.store_stock_qty, 10)
+
+    def test_store_flag_cannot_change(self):
+        order = self._create_order(quantity=1, paid=False)
+        with self.assertRaises(UserError):
+            order.write({'is_store_order': False})
+        regular = self.env['sale.order'].create({'partner_id': self.customer.id})
+        with self.assertRaises(UserError):
+            regular.write({'is_store_order': True})

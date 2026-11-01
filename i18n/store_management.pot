@@ -102,6 +102,12 @@ msgid "Amount:"
 msgstr ""
 
 #. module: store_management
+#. odoo-python
+#: code:addons/store_management/models/sale_order.py:0
+msgid "An order cannot be moved in or out of the store."
+msgstr ""
+
+#. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
 msgid "Archived"
 msgstr ""

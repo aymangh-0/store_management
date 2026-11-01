@@ -8,6 +8,7 @@ class SaleOrder(models.Model):
     is_store_order = fields.Boolean(
         string='Store Order',
         default=False,
+        readonly=True
     )
 
     store_total= fields.Monetary(
@@ -188,6 +189,10 @@ class SaleOrder(models.Model):
         return result
 
     def write(self, vals):
+        if 'is_store_order' in vals and any(
+            order.is_store_order != bool(vals['is_store_order']) for order in self
+        ):
+            raise UserError(_('An order cannot be moved in or out of the store.'))
         protected_fields = {'partner_id', 'date_order', 'order_line'}
         for order in self:
             if order.is_store_order and order.state == 'sale' and protected_fields & set(vals):
