@@ -84,6 +84,8 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
   - A confirmed order can no longer be edited (enforced in Python, from any screen)
   - The lines of a confirmed order cannot be changed, added, or removed, even directly on the line
   - Store buttons (**Confirm**, **Cancel**, **Reset to Draft**) work on store orders only
+  - The **Store Order** flag is set when the order is created and can never change afterwards, so an order cannot be moved in or out of the store
+  - The flag is shown read-only on the standard Sales order form, on store orders only
   - A cancelled order cannot be confirmed
   - Reset to Draft is only allowed from Cancelled
 - Stock handling:
@@ -100,7 +102,8 @@ To run it manually: **Settings → Technical → Scheduled Actions → Store: Lo
   - Every payment and refund is posted in the chatter with the amount and the user
 - Cancellation reason:
   - **Cancel** opens a pop-up with ready-made reasons: **Customer request**, **Wrong order details**, **Payment issue**, or **Other** (requires a written reason)
-  - The reason is saved on the order, shown on the form, and posted in the chatter
+  - The reason is saved on the order in the user's language, shown on the form, and posted in the chatter
+  - Customers choose from the same reasons when they cancel a draft on the portal
   - Optional **Cancellation Reason** column in the orders list (hidden by default)
 - Store orders cannot be signed or paid online, so a customer can never confirm one from the standard sales portal page
 - Customer selection limited to store customers
@@ -156,7 +159,7 @@ Order flow:
 | Place an order | Customer, on the portal | A **draft**, **Not Paid** store order. Stock is checked but not deducted. The customer is taken to the payment page |
 | Pay | Customer, with **Pay Now** (right away, or later from the order page) | The order is **Paid** |
 | Confirm | Store User or Store Manager, in the back office | Paid orders only. Stock is deducted, the history is logged, and the confirmation email is sent |
-| Cancel a draft | Customer, with **Cancel Order** on the order page | The order is cancelled with the reason *Cancelled by the customer from the portal.*; a paid order is **Refunded** |
+| Cancel a draft | Customer, with **Cancel Order** on the order page | The customer chooses a reason from the same list as staff (**Other** requires details); the order is cancelled, the reason is saved and posted in the chatter under the customer's name, and a paid order is **Refunded** |
 | Cancel | Store User or Store Manager, with the cancel wizard | Draft or confirmed; a confirmed order returns its stock, and a paid order is **Refunded** |
 
 - Breadcrumbs on every page: **Home / Store Orders / …**
@@ -164,6 +167,7 @@ Order flow:
 - A quantity above the available stock turns the field red immediately, and the browser blocks submitting it
 - Placing an order creates a **draft** store order; the stock is checked again when staff confirm it, because a draft does not reserve stock
 - A customer can only cancel their own **draft** orders; confirmed orders are cancelled by staff
+- Portal cancellation reuses the staff cancel pop-up logic, so both follow the same rules; reasons are saved in the user's language
 - The payment page clearly says it is a test payment; it has no card fields and charges nothing
 - Paying is a form submission (`POST`) to its own URL; opening the payment page of an order that cannot be paid redirects to the order
 - **Daily limit**: a customer can place up to `5` orders in 24 hours (cancelled orders count too; orders created by staff for the customer do not)
@@ -210,11 +214,11 @@ To give a customer access: open the contact, then **Action → Grant portal acce
 
 ## Tests
 
-Automated tests in `tests/test_store_order.py` (29 tests) cover the main business rules:
+Automated tests in `tests/test_store_order.py` (30 tests) cover the main business rules:
 
 | Area | What is tested |
 |---|---|
-| Order rules | Duplicate products are rejected; confirming more than the stock is rejected and nothing changes; a confirmed order cannot be modified; fractional quantities are rejected |
+| Order rules | Duplicate products are rejected; confirming more than the stock is rejected and nothing changes; a confirmed order cannot be modified; fractional quantities are rejected; the store order flag cannot change |
 | Confirmed lines | A line quantity cannot be changed, a line cannot be added or deleted |
 | Regular orders | Store confirm and cancel reject a regular sales order and leave the stock unchanged |
 | Standard routes | Odoo's own confirm checks and deducts the stock, and its cancel restores it; store orders cannot be signed or paid |
@@ -231,7 +235,7 @@ Each test runs in a transaction that is rolled back, so the database is never ch
 python odoo-bin -c odoo.conf -d <database> -u store_management --test-enable --test-tags /store_management --stop-after-init --no-http
 ```
 
-The last result line should read `0 failed, 0 error(s) of 29 tests`.
+The last result line should read `0 failed, 0 error(s) of 30 tests`.
 
 ## Module Structure
 
@@ -376,6 +380,8 @@ These are deliberate simplifications for a training project:
 - [x] Daily portal order limit per customer, set by the Store Manager
 - [x] Test payment: customers pay when ordering, staff confirm paid orders only, refunds on cancel
 - [x] Code review fixes: stock in Odoo's own confirm and cancel, locked confirmed lines, whole quantities, no online signing or payment
+- [x] Locked store order flag, shown on the Sales order form
+- [x] Customers choose a cancellation reason on the portal
 
 ## License
 
