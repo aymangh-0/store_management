@@ -26,7 +26,7 @@ class StoreOrderCancelWizard(models.TransientModel):
                 raise UserError(_('Please write the cancellation reason.'))
             final_reason = self.reason.strip()
         else:
-            labels = dict(self._fields['reason_type'].selection)
+            labels = dict(self._fields['reason_type']._description_selection(self.env))
             final_reason = labels[self.reason_type]
 
         self.order_id.action_store_cancel()

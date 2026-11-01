@@ -151,14 +151,13 @@ msgid "Cancelled"
 msgstr ""
 
 #. module: store_management
-#. odoo-python
-#: code:addons/store_management/controllers/portal.py:0
-msgid "Cancelled by the customer from the portal."
+#: model:ir.ui.menu,name:store_management.store_menu_categories
+msgid "Categories"
 msgstr ""
 
 #. module: store_management
-#: model:ir.ui.menu,name:store_management.store_menu_categories
-msgid "Categories"
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Choose a reason"
 msgstr ""
 
 #. module: store_management
@@ -174,6 +173,11 @@ msgstr ""
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
 msgid "Confirm"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Confirm Cancellation"
 msgstr ""
 
 #. module: store_management
@@ -259,6 +263,11 @@ msgstr ""
 #. module: store_management
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__reason
 msgid "Details"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Details (required for Other)"
 msgstr ""
 
 #. module: store_management
@@ -556,6 +565,12 @@ msgstr ""
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
 msgid "Place Order"
+msgstr ""
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/controllers/portal.py:0
+msgid "Please choose a cancellation reason."
 msgstr ""
 
 #. module: store_management
@@ -924,6 +939,11 @@ msgstr ""
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.portal_my_home_store
 msgid "View your store orders or place a new one"
+msgstr ""
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Why do you want to cancel this order?"
 msgstr ""
 
 #. module: store_management

@@ -174,15 +174,14 @@ msgid "Cancelled"
 msgstr "ملغي"
 
 #. module: store_management
-#. odoo-python
-#: code:addons/store_management/controllers/portal.py:0
-msgid "Cancelled by the customer from the portal."
-msgstr "ألغاه العميل من البوابة."
-
-#. module: store_management
 #: model:ir.ui.menu,name:store_management.store_menu_categories
 msgid "Categories"
 msgstr "الفئات"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Choose a reason"
+msgstr "اختر سببًا"
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_customer_search_view
@@ -198,6 +197,11 @@ msgstr "الإعدادات"
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_form_view
 msgid "Confirm"
 msgstr "تأكيد"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Confirm Cancellation"
+msgstr "تأكيد الإلغاء"
 
 #. module: store_management
 #: model:ir.model.fields.selection,name:store_management.selection__sale_order__store_state__confirmed
@@ -283,6 +287,11 @@ msgstr "التاريخ"
 #: model:ir.model.fields,field_description:store_management.field_store_order_cancel_wizard__reason
 msgid "Details"
 msgstr "التفاصيل"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Details (required for Other)"
+msgstr "التفاصيل (مطلوبة عند اختيار أخرى)"
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form
@@ -582,6 +591,12 @@ msgstr "الجوال:"
 #: model_terms:ir.ui.view,arch_db:store_management.portal_store_new_order
 msgid "Place Order"
 msgstr "إرسال الطلب"
+
+#. module: store_management
+#. odoo-python
+#: code:addons/store_management/controllers/portal.py:0
+msgid "Please choose a cancellation reason."
+msgstr "يرجى اختيار سبب الإلغاء."
 
 #. module: store_management
 #. odoo-python
@@ -950,6 +965,11 @@ msgstr "المستخدم"
 #: model_terms:ir.ui.view,arch_db:store_management.portal_my_home_store
 msgid "View your store orders or place a new one"
 msgstr "اعرض طلباتك من المتجر أو أنشئ طلبًا جديدًا"
+
+#. module: store_management
+#: model_terms:ir.ui.view,arch_db:store_management.portal_my_store_order
+msgid "Why do you want to cancel this order?"
+msgstr "لماذا تريد إلغاء هذا الطلب؟"
 
 #. module: store_management
 #: model_terms:ir.ui.view,arch_db:store_management.store_order_cancel_wizard_form

@@ -44,13 +44,13 @@
 
     <template id="portal_my_store_order" name="My Store Order">
         <t t-call="portal.portal_layout">
-        <div class="d-flex flex-wrap align-items-center gap-3 mt-4 mb-3">
-            <h3 class="mb-0"><span t-field="order.name"/></h3>
-            <span t-field="order.store_state"
-                  t-attf-class="badge rounded-pill #{
-                      'text-bg-success' if order.store_state == 'confirmed'
-                      else 'text-bg-danger' if order.store_state == 'cancel'
-                      else 'text-bg-info'}"/>
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4 mb-3">
+                <h3 class="mb-0"><span t-field="order.name"/></h3>
+                <span t-field="order.store_state"
+                      t-attf-class="badge rounded-pill #{
+                          'text-bg-success' if order.store_state == 'confirmed'
+                          else 'text-bg-danger' if order.store_state == 'cancel'
+                          else 'text-bg-info'}"/>
                 <span t-field="order.store_payment_state"
                       t-attf-class="badge rounded-pill #{
                           'text-bg-success' if order.store_payment_state == 'paid'
@@ -59,13 +59,32 @@
                 <a t-if="order.state == 'draft' and order.store_payment_state == 'not_paid'"
                    t-attf-href="/my/store/orders/#{order.id}/pay"
                    class="btn btn-primary btn-sm">Pay Now</a>
-                <form t-if="order.state == 'draft'"
-                      t-attf-action="/my/store/orders/#{order.id}/cancel" method="post" class="d-inline">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <button type="submit" class="btn btn-outline-danger btn-sm">Cancel Order</button>
-                </form>
+                <button t-if="order.state == 'draft'" type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        data-bs-toggle="collapse" data-bs-target="#store_cancel_form">Cancel Order</button>
                 <a class="btn btn-secondary btn-sm ms-auto"
                    t-attf-href="/my/store/orders/#{order.id}/pdf">Download PDF</a>
+            </div>
+
+            <div t-if="error" class="alert alert-danger" t-out="error"/>
+
+            <div t-if="order.state == 'draft'" id="store_cancel_form"
+                 t-attf-class="collapse mb-3 #{'show' if error else ''}">
+                <form t-attf-action="/my/store/orders/#{order.id}/cancel" method="post" class="card card-body">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <label class="form-label" for="reason_type">Why do you want to cancel this order?</label>
+                    <select name="reason_type" id="reason_type" class="form-select mb-2" required="required">
+                        <option value="">Choose a reason</option>
+                        <t t-foreach="cancel_reasons" t-as="option">
+                            <option t-att-value="option[0]" t-out="option[1]"/>
+                        </t>
+                    </select>
+                    <textarea name="reason" class="form-control mb-2" rows="2"
+                              placeholder="Details (required for Other)"/>
+                    <div>
+                        <button type="submit" class="btn btn-danger btn-sm">Confirm Cancellation</button>
+                    </div>
+                </form>
             </div>
 
             <p>

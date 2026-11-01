@@ -33,17 +33,26 @@ class StorePortal(CustomerPortal):
             return None
         return order
 
+    def _store_cancel_reasons(self):
+        field = request.env['store.order.cancel.wizard']._fields['reason_type']
+        return field._description_selection(request.env)
+
+    def _store_render_order(self, order, error=None):
+        values = self._prepare_portal_layout_values()
+        values.update({
+            'order': order,
+            'cancel_reasons': self._store_cancel_reasons(),
+            'error': error,
+            'page_name': 'store_order',
+        })
+        return request.render('store_management.portal_my_store_order', values)
+
     @http.route('/my/store/orders/<int:order_id>', type='http', auth='user', website=True)
     def portal_my_store_order(self, order_id, **kw):
         order = self._store_get_order(order_id)
         if not order:
             return request.redirect('/my/store/orders')
-        values = self._prepare_portal_layout_values()
-        values.update({
-            'order': order,
-            'page_name': 'store_order',
-        })
-        return request.render('store_management.portal_my_store_order', values)
+        return self._store_render_order(order)
 
     @http.route('/my/store/orders/<int:order_id>/pdf', type='http', auth='user', website=True)
     def portal_my_store_order_pdf(self, order_id, **kw):
@@ -133,16 +142,25 @@ class StorePortal(CustomerPortal):
 
         return request.redirect('/my/store/orders/%s/pay' % order.id)
 
-    @http.route('/my/store/orders/<int:order_id>/cancel', type='http', auth='user', website=True, methods=['POST'])
-    def portal_store_cancel_order(self, order_id, **post):
+    @http.route('/my/store/orders/<int:order_id>/cancel', type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_store_cancel_order(self, order_id, reason_type=None, reason=None, **post):
         order = self._store_get_order(order_id)
         if not order:
             return request.redirect('/my/store/orders')
-        if order.state == 'draft':
-            order.action_store_cancel()
-            reason = _('Cancelled by the customer from the portal.')
-            order.store_cancel_reason = reason
-            order.message_post(body=reason)
+        if order.state != 'draft':
+            return request.redirect('/my/store/orders/%s' % order.id)
+        if reason_type not in dict(self._store_cancel_reasons()):
+            return self._store_render_order(order, _('Please choose a cancellation reason.'))
+        wizard = request.env['store.order.cancel.wizard'].sudo().create({
+            'order_id': order.id,
+            'reason_type': reason_type,
+            'reason': reason,
+        })
+        try:
+            wizard.action_confirm_cancel()
+        except UserError as error:
+            return self._store_render_order(order, error.args[0])
         return request.redirect('/my/store/orders/%s' % order.id)
 
     def _store_can_pay(self, order):
